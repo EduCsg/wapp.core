@@ -1,12 +1,10 @@
 package com.wapp.core.resources;
 
 import com.wapp.core.models.WorkoutDto;
+import com.wapp.core.models.WorkoutModel;
 import com.wapp.core.services.WorkoutService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.sql.SQLException;
 
@@ -17,11 +15,13 @@ public class WorkoutResource {
     WorkoutService workoutService = new WorkoutService();
 
     @PostMapping("/workout")
-    public ResponseEntity<?> createWorkout(@RequestBody WorkoutDto workout) throws SQLException {
-
-        System.out.println(workout.toString());
-
+    public ResponseEntity<?> createWorkout(@RequestBody WorkoutModel workout) throws SQLException {
         return workoutService.createWorkout(workout);
     }
 
+    @GetMapping("/workout/{workoutId}")
+    public ResponseEntity<?> getWorkout(@PathVariable String workoutId) throws SQLException {
+        return workoutService.getWorkoutById(workoutId);
+    }
+    
 }
