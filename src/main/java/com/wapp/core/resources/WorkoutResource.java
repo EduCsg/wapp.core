@@ -1,6 +1,5 @@
 package com.wapp.core.resources;
 
-import com.wapp.core.models.WorkoutDto;
 import com.wapp.core.models.WorkoutModel;
 import com.wapp.core.services.WorkoutService;
 import org.springframework.http.ResponseEntity;
@@ -23,5 +22,10 @@ public class WorkoutResource {
     public ResponseEntity<?> getWorkout(@PathVariable String workoutId) throws SQLException {
         return workoutService.getWorkoutById(workoutId);
     }
-    
+
+    @GetMapping("/workout/user/{userId}")
+    public ResponseEntity<?> getWorkoutByUserId(@PathVariable String userId) throws SQLException {
+        return workoutService.getWorkoutByUserId(userId);
+    }
+
 }

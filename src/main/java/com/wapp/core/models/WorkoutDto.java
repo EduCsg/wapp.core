@@ -2,10 +2,9 @@ package com.wapp.core.models;
 
 import lombok.Data;
 
-import java.util.Date;
-
 @Data
 public class WorkoutDto {
+    private String id;
     private String name;
     private String description;
     private String date;

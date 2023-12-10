@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.sql.Connection;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -45,35 +46,68 @@ public class WorkoutService {
 
     public ResponseEntity<?> getWorkoutById(String workoutId) {
 
-            ResponseModel response = new ResponseModel();
+        ResponseModel response = new ResponseModel();
 
-            try {
+        try {
 
-                Connection conn = DatabaseConnection.getConnection();
-                WorkoutDto workout = workoutRepository.getWorkoutById(conn, workoutId);
+            Connection conn = DatabaseConnection.getConnection();
+            WorkoutDto workout = workoutRepository.getWorkoutById(conn, workoutId);
 
-                if(workout.getName() == null) {
-                    response.setStatus("Failed");
-                    response.setSuccess(false);
-                    response.setMessage("Workout not found!");
-                    response.setData(null);
-                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
-                }
-
-                response.setStatus("Success");
-                response.setSuccess(true);
-                response.setMessage("Workout retrieved successfully!");
-                response.setData(workout);
-
-                return ResponseEntity.status(HttpStatus.OK).body(response);
-            } catch (Exception e) {
-                e.printStackTrace();
-
+            if (workout.getName() == null) {
                 response.setStatus("Failed");
                 response.setSuccess(false);
-                response.setMessage(e.getMessage());
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+                response.setMessage("Workout not found!");
+                response.setData(null);
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
             }
+
+            response.setStatus("Success");
+            response.setSuccess(true);
+            response.setMessage("Workout retrieved successfully!");
+            response.setData(workout);
+
+            return ResponseEntity.status(HttpStatus.OK).body(response);
+        } catch (Exception e) {
+            e.printStackTrace();
+
+            response.setStatus("Failed");
+            response.setSuccess(false);
+            response.setMessage(e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+        }
+    }
+
+    public ResponseEntity<?> getWorkoutByUserId(String userId) {
+
+        ResponseModel response = new ResponseModel();
+
+        try {
+
+            Connection conn = DatabaseConnection.getConnection();
+            List<WorkoutDto> workout = workoutRepository.getWorkoutByUserId(conn, userId);
+
+            if (workout.isEmpty()) {
+                response.setStatus("Failed");
+                response.setSuccess(false);
+                response.setMessage("Workout not found!");
+                response.setData(null);
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+            }
+
+            response.setStatus("Success");
+            response.setSuccess(true);
+            response.setMessage("Workout retrieved successfully!");
+            response.setData(workout);
+
+            return ResponseEntity.status(HttpStatus.OK).body(response);
+        } catch (Exception e) {
+            e.printStackTrace();
+
+            response.setStatus("Failed");
+            response.setSuccess(false);
+            response.setMessage(e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+        }
     }
 
 }
