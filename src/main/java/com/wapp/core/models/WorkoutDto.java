@@ -2,6 +2,9 @@ package com.wapp.core.models;
 
 import lombok.Data;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Data
 public class WorkoutDto {
     private String id;
@@ -12,6 +15,5 @@ public class WorkoutDto {
     private String startTime;
     private String endTime;
 
-    // TODO: list of exercises
-    // private List<ExerciseDto> exercises;
+    private List<ExerciseDto> exercises = new ArrayList<>();
 }

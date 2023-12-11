@@ -1,5 +1,6 @@
 package com.wapp.core.repository;
 
+import com.wapp.core.models.ExerciseDto;
 import com.wapp.core.models.WorkoutDto;
 import com.wapp.core.models.WorkoutModel;
 import org.springframework.stereotype.Repository;
@@ -35,7 +36,10 @@ public class WorkoutRepository {
     public WorkoutDto getWorkoutById(Connection conn, String workoutId) {
 
         WorkoutDto workout = new WorkoutDto();
-        String query = "SELECT name, description, date, duration, start_time, end_time FROM WORKOUTS WHERE id = ?";
+        String query = "select w.name, w.description, w.date, w.duration, w.start_time, w.end_time, ed.exercise_id, ed.exercise_order, ed.reps, ed.weight, e.name, e.muscle_group from WORKOUTS w " +
+                               " inner join EXERCISES_DONE ed on w.id = ed.workout_id " +
+                               " inner join EXERCISES e on ed.exercise_id = e.id " +
+                               " where w.id = ? order by ed.exercise_order";
 
         try {
             PreparedStatement stm = conn.prepareStatement(query);
@@ -45,6 +49,8 @@ public class WorkoutRepository {
             ResultSet res = stm.getResultSet();
 
             while (res.next()) {
+                ExerciseDto exercise = new ExerciseDto();
+
                 workout.setName(res.getString("name"));
                 workout.setDescription(res.getString("description"));
                 workout.setDate(res.getString("date"));
@@ -52,7 +58,17 @@ public class WorkoutRepository {
                 workout.setStartTime(String.valueOf(res.getTimestamp("start_time").toLocalDateTime()));
                 workout.setEndTime(String.valueOf(res.getTimestamp("end_time").toLocalDateTime()));
                 workout.setId(workoutId);
+
+                exercise.setId(res.getString("exercise_id"));
+                exercise.setName(res.getString("e.name"));
+                exercise.setMuscleGroup(res.getString("muscle_group"));
+                exercise.setReps(res.getString("reps"));
+                exercise.setWeight(res.getString("weight"));
+                exercise.setExerciseOrder(res.getString("exercise_order"));
+
+                workout.getExercises().add(exercise);
             }
+
 
         } catch (SQLException e) {
             e.printStackTrace();
