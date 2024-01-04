@@ -10,7 +10,7 @@
     </parent>
     <groupId>com.wapp</groupId>
     <artifactId>core</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>1.0.0</version>
     <name>core</name>
     <description>Wapp, an app for weights!</description>
     <properties>
