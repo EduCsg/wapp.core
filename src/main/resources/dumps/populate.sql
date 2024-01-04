@@ -20,18 +20,18 @@ insert into WORKOUTS (id, user_id, name, description, date, duration, start_time
 values ('bcaf10c5-56f5-41d9-aae6-4ea2e15734e0', 'c1b21862-5911-4437-8d5a-1792bfd51801', 'workout_name',
         'workout_description', '2023-12-31', 60, '10:00:00', '11:00:00');
 
-insert into EXERCISES_DONE (id, workout_id, user_id, exercise_id, exercise_order)
+insert into EXERCISES_DONE (id, workout_id, user_id, exercise_id, exercise_order, description)
 values ('c0e7a1b5-b328-499d-ba2f-52b372c57ecc', 'bcaf10c5-56f5-41d9-aae6-4ea2e15734e0',
-        'c1b21862-5911-4437-8d5a-1792bfd51801', '2739634f-6f48-47cf-9529-bc7cfe55585e', 1);
-insert into EXERCISES_DONE (id, workout_id, user_id, exercise_id, exercise_order)
+        'c1b21862-5911-4437-8d5a-1792bfd51801', '2739634f-6f48-47cf-9529-bc7cfe55585e', 1, 'descricao 1 exercicio');
+insert into EXERCISES_DONE (id, workout_id, user_id, exercise_id, exercise_order, description)
 values ('f9315f51-55f4-4b5a-a2f9-4b217c67c38b', 'bcaf10c5-56f5-41d9-aae6-4ea2e15734e0',
-        'c1b21862-5911-4437-8d5a-1792bfd51801', '52542437-47df-4ccd-a3ab-1e19208bd0ea', 2);
+        'c1b21862-5911-4437-8d5a-1792bfd51801', '52542437-47df-4ccd-a3ab-1e19208bd0ea', 2, 'descricao 2 exercicio');
 
-insert into EXERCISES_SERIES (id, exercise_done_id, repetitions, weight, series_order)
-values ('0ddaee16-dafe-4eba-b057-3e6b463a0425', 'c0e7a1b5-b328-499d-ba2f-52b372c57ecc', 10, 10, 1);
-insert into EXERCISES_SERIES (id, exercise_done_id, repetitions, weight, series_order)
-values ('e5cc7c71-aba1-4db7-81ae-00eaccf3c6e9', 'c0e7a1b5-b328-499d-ba2f-52b372c57ecc', 5, 6, 3);
-insert into EXERCISES_SERIES (id, exercise_done_id, repetitions, weight, series_order)
-values ('8db67660-fbb7-41bd-a52b-338940d1ab2a', 'f9315f51-55f4-4b5a-a2f9-4b217c67c38b', 10, 10, 1);
-insert into EXERCISES_SERIES (id, exercise_done_id, repetitions, weight, series_order)
-values ('bec8900a-0e3c-4cc5-b1b2-4eb56c70be54', 'f9315f51-55f4-4b5a-a2f9-4b217c67c38b', 5, 6, 3);
+insert into EXERCISES_SERIES (id, exercise_done_id, repetitions, weight, series_order, description)
+values ('0ddaee16-dafe-4eba-b057-3e6b463a0425', 'c0e7a1b5-b328-499d-ba2f-52b372c57ecc', 10, 10, 1, 'descricao 1 serie');
+insert into EXERCISES_SERIES (id, exercise_done_id, repetitions, weight, series_order, description)
+values ('e5cc7c71-aba1-4db7-81ae-00eaccf3c6e9', 'c0e7a1b5-b328-499d-ba2f-52b372c57ecc', 5, 6, 3, 'descricao 2 serie');
+insert into EXERCISES_SERIES (id, exercise_done_id, repetitions, weight, series_order, description)
+values ('8db67660-fbb7-41bd-a52b-338940d1ab2a', 'f9315f51-55f4-4b5a-a2f9-4b217c67c38b', 10, 10, 1, 'descricao 3 serie');
+insert into EXERCISES_SERIES (id, exercise_done_id, repetitions, weight, series_order, description)
+values ('bec8900a-0e3c-4cc5-b1b2-4eb56c70be54', 'f9315f51-55f4-4b5a-a2f9-4b217c67c38b', 5, 6, 3, 'descricao 4 serie');
