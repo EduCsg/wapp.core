@@ -65,6 +65,7 @@ CREATE TABLE EXERCISES_DONE
     user_id        varchar(36) NOT NULL,
     exercise_id    varchar(36) NOT NULL,
     exercise_order int         NOT NULL,
+    description    varchar(255),
 
     PRIMARY KEY (id),
     FOREIGN KEY (workout_id) REFERENCES WORKOUTS (id),
@@ -79,6 +80,7 @@ CREATE TABLE EXERCISES_SERIES
     repetitions      int         NOT NULL,
     weight           int         NOT NULL,
     series_order     int         NOT NULL,
+    description      varchar(255),
 
     PRIMARY KEY (id),
     FOREIGN KEY (exercise_done_id) REFERENCES EXERCISES_DONE (id)

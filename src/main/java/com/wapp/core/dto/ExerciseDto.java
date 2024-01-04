@@ -16,6 +16,7 @@ public class ExerciseDto {
     private int exercise_order;
     private String name;
     private String muscle_group;
+    private String description;
 
     private List<SeriesModel> series = new ArrayList<>();
 }

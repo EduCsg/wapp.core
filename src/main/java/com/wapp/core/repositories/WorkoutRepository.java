@@ -14,8 +14,8 @@ public class WorkoutRepository {
     public WorkoutModel getWorkoutById(Connection conn, String workout_id) throws SQLException {
 
         String query = "SELECT w.name, w.user_id, w.description, w.date, w.duration, w.start_time, w.end_time, " +
-                               " ed.exercise_order, ed.id, ed.exercise_id, " +
-                               " e.name, e.muscle_group, es.id, es.exercise_done_id, es.repetitions, es.weight, es.series_order " +
+                               " ed.exercise_order, ed.id, ed.exercise_id, ed.description, " +
+                               " e.name, e.muscle_group, es.id, es.exercise_done_id, es.repetitions, es.weight, es.series_order, es.description " +
                                " FROM WORKOUTS w " +
                                " INNER JOIN EXERCISES_DONE ed on w.id = ed.workout_id " +
                                " INNER JOIN EXERCISES e on ed.exercise_id = e.id and w.id = ed.workout_id " +
@@ -62,6 +62,7 @@ public class WorkoutRepository {
                 exerciseDto.setUser_id(res.getString("w.user_id"));
                 exerciseDto.setExercise_id(res.getString("ed.exercise_id"));
                 exerciseDto.setExercise_order(res.getInt("ed.exercise_order"));
+                exerciseDto.setDescription(res.getString("ed.description"));
                 exerciseDto.setName(res.getString("e.name"));
                 exerciseDto.setMuscle_group(res.getString("e.muscle_group"));
 
@@ -75,6 +76,7 @@ public class WorkoutRepository {
             seriesModel.setRepetitions(res.getInt("es.repetitions"));
             seriesModel.setWeight(res.getInt("es.weight"));
             seriesModel.setSeries_order(res.getInt("es.series_order"));
+            seriesModel.setDescription(res.getString("es.description"));
 
             exerciseDto.getSeries().add(seriesModel);
         }

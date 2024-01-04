@@ -10,5 +10,6 @@ public class SeriesModel {
     private Integer repetitions;
     private Integer weight;
     private Integer series_order;
+    private String description;
 
 }
