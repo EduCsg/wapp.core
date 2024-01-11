@@ -1,13 +1,28 @@
 CREATE TABLE USERS
 (
-    id       varchar(36) NOT NULL,
-    username varchar(36) NOT NULL,
-    password varchar(36) NOT NULL,
-    email    varchar(36) NOT NULL,
+    id       varchar(36)  NOT NULL,
+    username varchar(255) NOT NULL,
+    name     varchar(255) NOT NULL,
+    password varchar(255) NOT NULL,
+    email    varchar(255) NOT NULL,
 
     PRIMARY KEY (id)
 );
 
+CREATE TABLE USER_METADATA
+(
+    id          varchar(36) NOT NULL,
+    user_id     varchar(36) NOT NULL,
+    height      int         NOT NULL,
+    weight      int         NOT NULL,
+    body_fat    int         NOT NULL,
+    gender      varchar(50) NOT NULL,
+    age         int         NOT NULL,
+    inserted_at date        NOT NULL,
+
+    PRIMARY KEY (id),
+    FOREIGN KEY (user_id) REFERENCES USERS (id)
+);
 
 CREATE TABLE ROUTINES
 (
@@ -22,8 +37,9 @@ CREATE TABLE ROUTINES
 CREATE TABLE EXERCISES
 (
     id           varchar(36) NOT NULL,
-    name         varchar(36) NOT NULL,
-    muscle_group varchar(36) NOT NULL,
+    name         varchar(50) NOT NULL,
+    muscle_group varchar(50) NOT NULL,
+    inserted_by  varchar(36),
 
     PRIMARY KEY (id)
 );
