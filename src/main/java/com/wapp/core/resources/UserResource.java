@@ -1,11 +1,9 @@
 package com.wapp.core.resources;
 
+import com.wapp.core.models.UserModel;
 import com.wapp.core.services.UserService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/v1/core/users")
@@ -16,6 +14,11 @@ public class UserResource {
     @GetMapping("/{userId}")
     public ResponseEntity<?> getUserById(@PathVariable String userId) {
         return userService.getUserById(userId);
+    }
+
+    @PostMapping("/register")
+    public ResponseEntity<?> registerUser(@RequestBody UserModel userModel) {
+        return userService.registerUser(userModel);
     }
 
 }
