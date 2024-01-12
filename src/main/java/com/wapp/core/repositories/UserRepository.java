@@ -16,7 +16,7 @@ public class UserRepository {
         String query = "SELECT u.username, u.email, u.name, u.password, " +
                                " um.age, um.body_fat, um.gender, um.height, um.inserted_at, um.weight " +
                                " FROM USERS u " +
-                               " INNER JOIN USER_METADATA um " +
+                               " LEFT JOIN USER_METADATA um " +
                                " ON u.id = um.user_id " +
                                " WHERE u.id = ?";
 
