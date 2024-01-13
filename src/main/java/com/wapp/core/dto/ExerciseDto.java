@@ -1,6 +1,6 @@
 package com.wapp.core.dto;
 
-import com.wapp.core.models.SeriesModel;
+import com.wapp.core.models.SerieModel;
 import lombok.Data;
 
 import java.util.ArrayList;
@@ -10,13 +10,13 @@ import java.util.List;
 public class ExerciseDto {
 
     private String id;
-    private String workout_id;
-    private String user_id;
-    private String exercise_id;
-    private int exercise_order;
+    private String workoutId;
+    private String userId;
+    private String exerciseId;
+    private int exerciseOrder;
     private String name;
-    private String muscle_group;
+    private String muscleGroup;
     private String description;
 
-    private List<SeriesModel> series = new ArrayList<>();
+    private List<SerieModel> series = new ArrayList<>();
 }

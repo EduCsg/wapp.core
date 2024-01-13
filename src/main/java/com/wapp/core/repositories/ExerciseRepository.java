@@ -31,7 +31,7 @@ public class ExerciseRepository {
 
             exerciseModel.setId(stm.getResultSet().getString("e.id"));
             exerciseModel.setName(stm.getResultSet().getString("e.name"));
-            exerciseModel.setMuscle_group(stm.getResultSet().getString("e.muscle_group"));
+            exerciseModel.setMuscleGroup(stm.getResultSet().getString("e.muscle_group"));
 
             exerciseList.add(exerciseModel);
         }

@@ -1,11 +1,9 @@
 package com.wapp.core.resources;
 
+import com.wapp.core.models.WorkoutModel;
 import com.wapp.core.services.WorkoutService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/v1/core/workout")
@@ -16,5 +14,10 @@ public class WorkoutResource {
     @GetMapping("/{workoutId}")
     public ResponseEntity<?> getWorkoutById(@PathVariable String workoutId) {
         return workoutService.getWorkoutById(workoutId);
+    }
+
+    @PostMapping("/create")
+    public ResponseEntity<?> createWorkout(@RequestBody WorkoutModel workoutModel) {
+        return workoutService.createWorkout(workoutModel);
     }
 }

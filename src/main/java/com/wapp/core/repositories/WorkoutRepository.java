@@ -1,7 +1,7 @@
 package com.wapp.core.repositories;
 
 import com.wapp.core.dto.ExerciseDto;
-import com.wapp.core.models.SeriesModel;
+import com.wapp.core.models.SerieModel;
 import com.wapp.core.models.WorkoutModel;
 
 import java.sql.Connection;
@@ -46,42 +46,90 @@ public class WorkoutRepository {
             if (workoutModel.getId() == null) {
                 workoutModel.setId(workout_id);
                 workoutModel.setName(res.getString("w.name"));
-                workoutModel.setUser_id(res.getString("w.user_id"));
+                workoutModel.setUserId(res.getString("w.user_id"));
                 workoutModel.setDescription(res.getString("w.description"));
                 workoutModel.setDate(res.getString("w.date"));
                 workoutModel.setDuration(res.getString("w.duration"));
-                workoutModel.setStart_time(res.getString("w.start_time"));
-                workoutModel.setEnd_time(res.getString("w.end_time"));
+                workoutModel.setStartTime(res.getString("w.start_time"));
+                workoutModel.setEndTime(res.getString("w.end_time"));
             }
 
             // Se o exercício não foi encontrado, cria um novo
             if (exerciseDto == null) {
                 exerciseDto = new ExerciseDto();
                 exerciseDto.setId(exerciseId);
-                exerciseDto.setWorkout_id(workout_id);
-                exerciseDto.setUser_id(res.getString("w.user_id"));
-                exerciseDto.setExercise_id(res.getString("ed.exercise_id"));
-                exerciseDto.setExercise_order(res.getInt("ed.exercise_order"));
+                exerciseDto.setWorkoutId(workout_id);
+                exerciseDto.setUserId(res.getString("w.user_id"));
+                exerciseDto.setExerciseId(res.getString("ed.exercise_id"));
+                exerciseDto.setExerciseOrder(res.getInt("ed.exercise_order"));
                 exerciseDto.setDescription(res.getString("ed.description"));
                 exerciseDto.setName(res.getString("e.name"));
-                exerciseDto.setMuscle_group(res.getString("e.muscle_group"));
+                exerciseDto.setMuscleGroup(res.getString("e.muscle_group"));
 
                 workoutModel.getExercises().add(exerciseDto);
             }
 
             // Cria uma nova série e adiciona ao exercício
-            SeriesModel seriesModel = new SeriesModel();
+            SerieModel seriesModel = new SerieModel();
             seriesModel.setId(res.getString("es.id"));
             seriesModel.setExerciseDoneId(res.getString("es.exercise_done_id"));
             seriesModel.setRepetitions(res.getInt("es.repetitions"));
             seriesModel.setWeight(res.getInt("es.weight"));
-            seriesModel.setSeries_order(res.getInt("es.series_order"));
+            seriesModel.setSerieOrder(res.getInt("es.series_order"));
             seriesModel.setDescription(res.getString("es.description"));
 
             exerciseDto.getSeries().add(seriesModel);
         }
 
         return workoutModel;
+    }
+
+    public void doneWorkout(Connection conn, WorkoutModel workoutModel) throws SQLException {
+
+        String query = "INSERT INTO WORKOUTS (id, user_id, name, description, date, duration, start_time, end_time) VALUES (?, ?, ?, ?, ?, ?, ?, ?);";
+
+        PreparedStatement workouts_stm = conn.prepareStatement(query);
+        workouts_stm.setString(1, workoutModel.getId());
+        workouts_stm.setString(2, workoutModel.getUserId());
+        workouts_stm.setString(3, workoutModel.getName());
+        workouts_stm.setString(4, workoutModel.getDescription());
+        workouts_stm.setString(5, workoutModel.getDate());
+        workouts_stm.setString(6, workoutModel.getDuration());
+        workouts_stm.setString(7, workoutModel.getStartTime());
+        workouts_stm.setString(8, workoutModel.getEndTime());
+
+        workouts_stm.executeUpdate();
+    }
+
+    public void doneExercise(Connection conn, ExerciseDto exercise) throws SQLException {
+        String query = "INSERT INTO EXERCISES_DONE (id, workout_id, user_id, exercise_id, exercise_order, description) VALUES (?, ?, ?, ?, ?, ?);";
+
+        PreparedStatement exercises_done_stm = conn.prepareStatement(query);
+
+        exercises_done_stm.setString(1, exercise.getId());
+        exercises_done_stm.setString(2, exercise.getWorkoutId());
+        exercises_done_stm.setString(3, exercise.getUserId());
+        exercises_done_stm.setString(4, exercise.getExerciseId());
+        exercises_done_stm.setInt(5, exercise.getExerciseOrder());
+        exercises_done_stm.setString(6, exercise.getDescription());
+
+        exercises_done_stm.executeUpdate();
+    }
+
+    public void doneSerie(Connection conn, SerieModel serie) throws SQLException {
+
+        String query = "INSERT INTO EXERCISES_SERIES (id, exercise_done_id, repetitions, weight, series_order, description) VALUES (?, ?, ?, ?, ?, ?);";
+
+        PreparedStatement exercises_series_stm = conn.prepareStatement(query);
+
+        exercises_series_stm.setString(1, serie.getId());
+        exercises_series_stm.setString(2, serie.getExerciseDoneId());
+        exercises_series_stm.setInt(3, serie.getRepetitions());
+        exercises_series_stm.setInt(4, serie.getWeight());
+        exercises_series_stm.setInt(5, serie.getSerieOrder());
+        exercises_series_stm.setString(6, serie.getDescription());
+
+        exercises_series_stm.executeUpdate();
     }
 
 }

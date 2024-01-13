@@ -10,13 +10,13 @@ import java.util.List;
 public class WorkoutModel {
 
     private String id;
-    private String user_id;
+    private String userId;
     private String name;
     private String description;
     private String date;
     private String duration;
-    private String start_time;
-    private String end_time;
+    private String startTime;
+    private String endTime;
 
     private List<ExerciseDto> exercises = new ArrayList<>();
 }
