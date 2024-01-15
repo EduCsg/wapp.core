@@ -14,6 +14,7 @@ public class ExerciseService {
     ExerciseRepository exerciseRepository = new ExerciseRepository();
 
     public ResponseEntity<?> getExerciseList(String userId) {
+        System.out.println("   [LOG] getExerciseList  =>  userId: " + userId);
 
         ResponseModel response = new ResponseModel();
 

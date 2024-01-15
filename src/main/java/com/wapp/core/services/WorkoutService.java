@@ -16,13 +16,14 @@ public class WorkoutService {
 
     WorkoutRepository workoutRepository = new WorkoutRepository();
 
-    public ResponseEntity<?> getWorkoutById(String workout_id) {
+    public ResponseEntity<?> getWorkoutById(String workoutId) {
+        System.out.println("   [LOG] getWorkoutById  =>  workoutId: " + workoutId);
 
         ResponseModel response = new ResponseModel();
 
         try {
             Connection conn = DatabaseConnection.getConnection();
-            WorkoutModel workoutModel = workoutRepository.getWorkoutById(conn, workout_id);
+            WorkoutModel workoutModel = workoutRepository.getWorkoutById(conn, workoutId);
 
             if (workoutModel.getId() == null) {
                 response.setMessage("Workout not found");
@@ -48,6 +49,8 @@ public class WorkoutService {
     }
 
     public ResponseEntity<?> createWorkout(WorkoutModel workoutModel) {
+        System.out.println("   [LOG] createWorkout  =>  workoutModel: " + workoutModel);
+
         // Insere na ordem do banco de dados (PKs e FKs)
         // -> workout -> exercises_done -> exercises_series
 

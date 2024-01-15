@@ -11,7 +11,7 @@ import java.sql.SQLException;
 
 public class WorkoutRepository {
 
-    public WorkoutModel getWorkoutById(Connection conn, String workout_id) throws SQLException {
+    public WorkoutModel getWorkoutById(Connection conn, String workoutId) throws SQLException {
 
         String query = "SELECT w.name, w.user_id, w.description, w.date, w.duration, w.start_time, w.end_time, " +
                                " ed.exercise_order, ed.id, ed.exercise_id, ed.description, " +
@@ -24,7 +24,7 @@ public class WorkoutRepository {
                                " ORDER BY ed.exercise_order, es.series_order;";
 
         PreparedStatement stm = conn.prepareStatement(query);
-        stm.setString(1, workout_id);
+        stm.setString(1, workoutId);
 
         ResultSet res = stm.executeQuery();
 
@@ -44,7 +44,7 @@ public class WorkoutRepository {
 
             // se o id do workout ainda não foi setado, seta
             if (workoutModel.getId() == null) {
-                workoutModel.setId(workout_id);
+                workoutModel.setId(workoutId);
                 workoutModel.setName(res.getString("w.name"));
                 workoutModel.setUserId(res.getString("w.user_id"));
                 workoutModel.setDescription(res.getString("w.description"));
@@ -58,7 +58,7 @@ public class WorkoutRepository {
             if (exerciseDto == null) {
                 exerciseDto = new ExerciseDto();
                 exerciseDto.setId(exerciseId);
-                exerciseDto.setWorkoutId(workout_id);
+                exerciseDto.setWorkoutId(workoutId);
                 exerciseDto.setUserId(res.getString("w.user_id"));
                 exerciseDto.setExerciseId(res.getString("ed.exercise_id"));
                 exerciseDto.setExerciseOrder(res.getInt("ed.exercise_order"));
@@ -88,48 +88,48 @@ public class WorkoutRepository {
 
         String query = "INSERT INTO WORKOUTS (id, user_id, name, description, date, duration, start_time, end_time) VALUES (?, ?, ?, ?, ?, ?, ?, ?);";
 
-        PreparedStatement workouts_stm = conn.prepareStatement(query);
-        workouts_stm.setString(1, workoutModel.getId());
-        workouts_stm.setString(2, workoutModel.getUserId());
-        workouts_stm.setString(3, workoutModel.getName());
-        workouts_stm.setString(4, workoutModel.getDescription());
-        workouts_stm.setString(5, workoutModel.getDate());
-        workouts_stm.setString(6, workoutModel.getDuration());
-        workouts_stm.setString(7, workoutModel.getStartTime());
-        workouts_stm.setString(8, workoutModel.getEndTime());
+        PreparedStatement workoutStm = conn.prepareStatement(query);
+        workoutStm.setString(1, workoutModel.getId());
+        workoutStm.setString(2, workoutModel.getUserId());
+        workoutStm.setString(3, workoutModel.getName());
+        workoutStm.setString(4, workoutModel.getDescription());
+        workoutStm.setString(5, workoutModel.getDate());
+        workoutStm.setString(6, workoutModel.getDuration());
+        workoutStm.setString(7, workoutModel.getStartTime());
+        workoutStm.setString(8, workoutModel.getEndTime());
 
-        workouts_stm.executeUpdate();
+        workoutStm.executeUpdate();
     }
 
     public void doneExercise(Connection conn, ExerciseDto exercise) throws SQLException {
         String query = "INSERT INTO EXERCISES_DONE (id, workout_id, user_id, exercise_id, exercise_order, description) VALUES (?, ?, ?, ?, ?, ?);";
 
-        PreparedStatement exercises_done_stm = conn.prepareStatement(query);
+        PreparedStatement exerciseDoneStm = conn.prepareStatement(query);
 
-        exercises_done_stm.setString(1, exercise.getId());
-        exercises_done_stm.setString(2, exercise.getWorkoutId());
-        exercises_done_stm.setString(3, exercise.getUserId());
-        exercises_done_stm.setString(4, exercise.getExerciseId());
-        exercises_done_stm.setInt(5, exercise.getExerciseOrder());
-        exercises_done_stm.setString(6, exercise.getDescription());
+        exerciseDoneStm.setString(1, exercise.getId());
+        exerciseDoneStm.setString(2, exercise.getWorkoutId());
+        exerciseDoneStm.setString(3, exercise.getUserId());
+        exerciseDoneStm.setString(4, exercise.getExerciseId());
+        exerciseDoneStm.setInt(5, exercise.getExerciseOrder());
+        exerciseDoneStm.setString(6, exercise.getDescription());
 
-        exercises_done_stm.executeUpdate();
+        exerciseDoneStm.executeUpdate();
     }
 
     public void doneSerie(Connection conn, SerieModel serie) throws SQLException {
 
         String query = "INSERT INTO EXERCISES_SERIES (id, exercise_done_id, repetitions, weight, series_order, description) VALUES (?, ?, ?, ?, ?, ?);";
 
-        PreparedStatement exercises_series_stm = conn.prepareStatement(query);
+        PreparedStatement exerciseSerieStm = conn.prepareStatement(query);
 
-        exercises_series_stm.setString(1, serie.getId());
-        exercises_series_stm.setString(2, serie.getExerciseDoneId());
-        exercises_series_stm.setInt(3, serie.getRepetitions());
-        exercises_series_stm.setInt(4, serie.getWeight());
-        exercises_series_stm.setInt(5, serie.getSerieOrder());
-        exercises_series_stm.setString(6, serie.getDescription());
+        exerciseSerieStm.setString(1, serie.getId());
+        exerciseSerieStm.setString(2, serie.getExerciseDoneId());
+        exerciseSerieStm.setInt(3, serie.getRepetitions());
+        exerciseSerieStm.setInt(4, serie.getWeight());
+        exerciseSerieStm.setInt(5, serie.getSerieOrder());
+        exerciseSerieStm.setString(6, serie.getDescription());
 
-        exercises_series_stm.executeUpdate();
+        exerciseSerieStm.executeUpdate();
     }
 
 }
