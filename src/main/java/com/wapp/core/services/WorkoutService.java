@@ -17,7 +17,7 @@ public class WorkoutService {
     WorkoutRepository workoutRepository = new WorkoutRepository();
 
     public ResponseEntity<?> getWorkoutById(String workoutId) {
-        System.out.println("   [LOG] getWorkoutById  =>  workoutId: " + workoutId);
+        System.out.println("   [LOG] getWorkoutById  ->  workoutId: " + workoutId);
 
         ResponseModel response = new ResponseModel();
 
@@ -49,7 +49,7 @@ public class WorkoutService {
     }
 
     public ResponseEntity<?> createWorkout(WorkoutModel workoutModel) {
-        System.out.println("   [LOG] createWorkout  =>  workoutModel: " + workoutModel);
+        System.out.println("   [LOG] createWorkout  ->  workoutModel: " + workoutModel.toString());
 
         // Insere na ordem do banco de dados (PKs e FKs)
         // -> workout -> exercises_done -> exercises_series

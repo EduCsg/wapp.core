@@ -12,7 +12,7 @@ public class HealthCheck {
     @GetMapping("/healthCheck")
     public ResponseEntity<?> healthCheck() {
         System.out.println("API is up and running!");
-        return ResponseEntity.ok("API is up and running!");
+        return ResponseEntity.ok("   [LOG] API is up and running!");
     }
 
 }

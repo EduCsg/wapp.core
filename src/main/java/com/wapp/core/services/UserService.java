@@ -19,7 +19,7 @@ public class UserService {
     UserRepository userRepository = new UserRepository();
 
     public ResponseEntity<?> getUserById(String userId) {
-        System.out.println("   [LOG] getUserById  =>  userId: " + userId);
+        System.out.println("   [LOG] getUserById  ->  userId: " + userId);
 
         ResponseModel response = new ResponseModel();
 
@@ -54,7 +54,7 @@ public class UserService {
     }
 
     public ResponseEntity<?> registerUser(UserModel userModel) {
-        System.out.println("   [LOG] getUserById  =>  userModel: " + userModel);
+        System.out.println("   [LOG] getUserById  ->  userModel: " + userModel.toString());
 
         ResponseModel response = new ResponseModel();
         String userId = UUID.randomUUID().toString();
