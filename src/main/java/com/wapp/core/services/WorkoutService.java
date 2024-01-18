@@ -5,24 +5,32 @@ import com.wapp.core.models.ResponseModel;
 import com.wapp.core.models.SerieModel;
 import com.wapp.core.models.WorkoutModel;
 import com.wapp.core.repositories.WorkoutRepository;
-import com.wapp.core.utils.DatabaseConnection;
+import com.wapp.core.utils.DatabaseConfig;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
 
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.UUID;
 
+@Service
 public class WorkoutService {
 
-    WorkoutRepository workoutRepository = new WorkoutRepository();
+    @Autowired
+    DatabaseConfig databaseConfig;
+
+    @Autowired
+    WorkoutRepository workoutRepository;
 
     public ResponseEntity<?> getWorkoutById(String workoutId) {
         System.out.println("   [LOG] getWorkoutById  ->  workoutId: " + workoutId);
-
         ResponseModel response = new ResponseModel();
 
+        Connection conn = null;
+
         try {
-            Connection conn = DatabaseConnection.getConnection();
+            conn = databaseConfig.getConnection();
             WorkoutModel workoutModel = workoutRepository.getWorkoutById(conn, workoutId);
 
             if (workoutModel.getId() == null) {
@@ -45,6 +53,10 @@ public class WorkoutService {
             response.setSuccess(false);
             response.setStatus("500");
             return ResponseEntity.status(500).body(response);
+        } finally {
+            if (conn != null) {
+                databaseConfig.closeConnection(conn);
+            }
         }
     }
 
@@ -54,12 +66,12 @@ public class WorkoutService {
         // Insere na ordem do banco de dados (PKs e FKs)
         // -> workout -> exercises_done -> exercises_series
 
-        workoutModel.setId(UUID.randomUUID().toString());
         ResponseModel response = new ResponseModel();
+        workoutModel.setId(UUID.randomUUID().toString());
         Connection conn = null;
 
         try {
-            conn = DatabaseConnection.getConnection();
+            conn = databaseConfig.getConnection();
             conn.setAutoCommit(false);
 
             workoutRepository.doneWorkout(conn, workoutModel);
@@ -108,9 +120,7 @@ public class WorkoutService {
                 try {
                     conn.setAutoCommit(true);
                     conn.close();
-                } catch (SQLException ex) {
-                    ex.printStackTrace();
-                }
+                } catch (SQLException ex) {}
             }
         }
     }

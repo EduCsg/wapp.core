@@ -2,6 +2,7 @@ package com.wapp.core.resources;
 
 import com.wapp.core.models.UserModel;
 import com.wapp.core.services.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -9,7 +10,8 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/v1/core/users")
 public class UserResource {
 
-    UserService userService = new UserService();
+    @Autowired
+    UserService userService;
 
     @GetMapping("/{userId}")
     public ResponseEntity<?> getUserById(@PathVariable String userId) {

@@ -6,25 +6,33 @@ import com.wapp.core.models.ResponseModel;
 import com.wapp.core.models.UserModel;
 import com.wapp.core.repositories.UserRepository;
 import com.wapp.core.utils.CryptoUtil;
-import com.wapp.core.utils.DatabaseConnection;
+import com.wapp.core.utils.DatabaseConfig;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
 
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Objects;
 import java.util.UUID;
 
+@Service
 public class UserService {
 
-    UserRepository userRepository = new UserRepository();
+    @Autowired
+    DatabaseConfig databaseConfig;
+
+    @Autowired
+    UserRepository userRepository;
 
     public ResponseEntity<?> getUserById(String userId) {
         System.out.println("   [LOG] getUserById  ->  userId: " + userId);
 
         ResponseModel response = new ResponseModel();
+        Connection conn = null;
 
         try {
-            Connection conn = DatabaseConnection.getConnection();
+            conn = databaseConfig.getConnection();
             UserDto userDto = userRepository.getUserById(conn, userId);
 
             if (userDto.getId() == null) {
@@ -49,6 +57,8 @@ public class UserService {
             response.setMessage("Error: " + e.getMessage());
 
             return ResponseEntity.status(500).body(response);
+        } finally {
+            if (conn != null) databaseConfig.closeConnection(conn);
         }
 
     }
@@ -58,9 +68,10 @@ public class UserService {
 
         ResponseModel response = new ResponseModel();
         String userId = UUID.randomUUID().toString();
+        Connection conn = null;
 
         try {
-            Connection conn = DatabaseConnection.getConnection();
+            conn = databaseConfig.getConnection();
 
             UserModel userExists = userRepository.getUserByEmailOrUsername(conn, userModel.getEmail(), userModel.getUsername());
 
@@ -98,6 +109,8 @@ public class UserService {
             response.setMessage("Error: " + e.getMessage());
 
             return ResponseEntity.status(500).body(response);
+        } finally {
+            if (conn != null) databaseConfig.closeConnection(conn);
         }
 
     }

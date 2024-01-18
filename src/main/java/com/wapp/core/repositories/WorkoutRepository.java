@@ -3,12 +3,14 @@ package com.wapp.core.repositories;
 import com.wapp.core.dto.ExerciseDto;
 import com.wapp.core.models.SerieModel;
 import com.wapp.core.models.WorkoutModel;
+import org.springframework.stereotype.Repository;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+@Repository
 public class WorkoutRepository {
 
     public WorkoutModel getWorkoutById(Connection conn, String workoutId) throws SQLException {

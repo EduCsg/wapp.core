@@ -3,23 +3,31 @@ package com.wapp.core.services;
 import com.wapp.core.models.ExerciseModel;
 import com.wapp.core.models.ResponseModel;
 import com.wapp.core.repositories.ExerciseRepository;
-import com.wapp.core.utils.DatabaseConnection;
+import com.wapp.core.utils.DatabaseConfig;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
 
 import java.sql.Connection;
 import java.util.List;
 
+@Service
 public class ExerciseService {
 
-    ExerciseRepository exerciseRepository = new ExerciseRepository();
+    @Autowired
+    DatabaseConfig databaseConfig;
+
+    @Autowired
+    ExerciseRepository exerciseRepository;
 
     public ResponseEntity<?> getExerciseList(String userId) {
         System.out.println("   [LOG] getExerciseList  ->  userId: " + userId);
 
         ResponseModel response = new ResponseModel();
+        Connection conn = null;
 
         try {
-            Connection conn = DatabaseConnection.getConnection();
+            conn = databaseConfig.getConnection();
             List<ExerciseModel> exerciseList = exerciseRepository.getExerciseList(conn, userId);
 
             if (exerciseList.isEmpty()) {
@@ -47,6 +55,8 @@ public class ExerciseService {
             response.setSuccess(false);
 
             return ResponseEntity.badRequest().body(response);
+        } finally {
+            if (conn != null) databaseConfig.closeConnection(conn);
         }
 
     }

@@ -2,12 +2,14 @@ package com.wapp.core.repositories;
 
 import com.wapp.core.dto.UserDto;
 import com.wapp.core.models.UserModel;
+import org.springframework.stereotype.Repository;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+@Repository
 public class UserRepository {
 
 
