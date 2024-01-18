@@ -64,7 +64,7 @@ public class UserService {
     }
 
     public ResponseEntity<?> registerUser(UserModel userModel) {
-        System.out.println("   [LOG] getUserById  ->  userModel: " + userModel.toString());
+        System.out.println("   [LOG] getUserById  ->  email: " + userModel.getEmail());
 
         ResponseModel response = new ResponseModel();
         String userId = UUID.randomUUID().toString();
