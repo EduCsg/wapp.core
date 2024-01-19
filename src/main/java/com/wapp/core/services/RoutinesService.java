@@ -21,9 +21,10 @@ public class RoutinesService {
     RoutinesRepository routinesRepository;
 
     public ResponseEntity<?> getRoutineByUserId(String userId) {
+        System.out.println("   [LOG] getRoutineByUserId  ->  userId: " + userId);
+
         Connection conn = null;
         ResponseModel response = new ResponseModel();
-
 
         try {
             conn = databaseConfig.getConnection();
