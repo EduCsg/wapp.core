@@ -18,18 +18,18 @@ insert into EXERCISES (id, name, muscle_group, inserted_by)
 values ('52542437-47df-4ccd-a3ab-1e19208bd0ea', 'exercise_by_user', 'muscle_group_2',
         'c1b21862-5911-4437-8d5a-1792bfd51801');
 
-insert into ROUTINES_EXERCISES (id, routine_id, exercise_id, exercise_order)
+insert into ROUTINES_EXERCISES (id, routine_id, exercise_id, series, exercise_order)
 values ('6a4bdd57-6205-4669-a4b7-9b1d28bd7c39', '2efc196a-04b9-4f27-b70d-eeb70dcdb139',
-        '2739634f-6f48-47cf-9529-bc7cfe55585e', 1);
-insert into ROUTINES_EXERCISES (id, routine_id, exercise_id, exercise_order)
+        '2739634f-6f48-47cf-9529-bc7cfe55585e', 1, 1);
+insert into ROUTINES_EXERCISES (id, routine_id, exercise_id, series, exercise_order)
 values ('b0b6b6e9-9b0e-4b9e-9b0a-9b0b9b0c9b0d', '2efc196a-04b9-4f27-b70d-eeb70dcdb139',
-        '52542437-47df-4ccd-a3ab-1e19208bd0ea', 2);
-insert into ROUTINES_EXERCISES (id, routine_id, exercise_id, exercise_order)
+        '52542437-47df-4ccd-a3ab-1e19208bd0ea', 2, 2);
+insert into ROUTINES_EXERCISES (id, routine_id, exercise_id, series, exercise_order)
 values ('3e1d801e-5964-47b1-a9d0-dc644ff1d1e8', '6084a1f0-cb3e-40d4-95a6-63e0e34077d4',
-        '52542437-47df-4ccd-a3ab-1e19208bd0ea', 1);
-insert into ROUTINES_EXERCISES (id, routine_id, exercise_id, exercise_order)
+        '52542437-47df-4ccd-a3ab-1e19208bd0ea', 3, 1);
+insert into ROUTINES_EXERCISES (id, routine_id, exercise_id, series, exercise_order)
 values ('cc2b9174-cce8-4130-901d-9875b14b937a', '6084a1f0-cb3e-40d4-95a6-63e0e34077d4',
-        '2739634f-6f48-47cf-9529-bc7cfe55585e', 2);
+        '2739634f-6f48-47cf-9529-bc7cfe55585e', 4, 2);
 
 insert into WORKOUTS (id, user_id, name, description, date, duration, start_time, end_time)
 values ('bcaf10c5-56f5-41d9-aae6-4ea2e15734e0', 'c1b21862-5911-4437-8d5a-1792bfd51801', 'workout_name',

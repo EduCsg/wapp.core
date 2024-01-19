@@ -51,6 +51,7 @@ CREATE TABLE ROUTINES_EXERCISES
     routine_id     varchar(36) NOT NULL,
     exercise_id    varchar(36) NOT NULL,
     exercise_order int         NOT NULL,
+    series         int         NOT NULL DEFAULT 0,
 
     PRIMARY KEY (id),
     FOREIGN KEY (routine_id) REFERENCES ROUTINES (id),

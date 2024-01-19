@@ -16,7 +16,7 @@ public class RoutinesRepository {
 
     public List<RoutineDto> getRoutineListByUserId(Connection conn, String userId) throws SQLException {
 
-        String query = "SELECT r.id, r.name, re.exercise_order, e.id, e.name, e.muscle_group " +
+        String query = "SELECT r.id, r.name, re.exercise_order, re.series, e.id, e.name, e.muscle_group " +
                                " FROM ROUTINES r " +
                                " LEFT JOIN ROUTINES_EXERCISES re on r.id = re.routine_id " +
                                " LEFT JOIN wapp_db.EXERCISES e on re.exercise_id = e.id " +
@@ -60,7 +60,8 @@ public class RoutinesRepository {
             exerciseModel.setId(res.getString("e.id"));
             exerciseModel.setName(res.getString("e.name"));
             exerciseModel.setMuscleGroup(res.getString("e.muscle_group"));
-            exerciseModel.setExercise_order(res.getInt("re.exercise_order"));
+            exerciseModel.setExerciseOrder(res.getInt("re.exercise_order"));
+            exerciseModel.setSeries(res.getInt("re.series"));
 
             // Adiciona o exercício na rotina
             routineDto.getExercises().add(exerciseModel);

@@ -10,6 +10,7 @@ public class ExerciseModel {
     private String id;
     private String name;
     private String muscleGroup;
-    private Integer exercise_order;
+    private Integer exerciseOrder;
+    private Integer series;
 
 }
