@@ -9,6 +9,8 @@ insert into ROUTINES (id, user_id, name)
 values ('2efc196a-04b9-4f27-b70d-eeb70dcdb139', 'c1b21862-5911-4437-8d5a-1792bfd51801', 'Routine 01');
 insert into ROUTINES (id, user_id, name)
 values ('6084a1f0-cb3e-40d4-95a6-63e0e34077d4', 'c1b21862-5911-4437-8d5a-1792bfd51801', 'Routine 02');
+insert into ROUTINES (id, user_id, name)
+values ('35fc7b6a-dc76-418e-bdc8-abb6d8e2cd95', 'c1b21862-5911-4437-8d5a-1792bfd51801', 'Empty Routine');
 
 insert into EXERCISES (id, name, muscle_group)
 values ('2739634f-6f48-47cf-9529-bc7cfe55585e', 'exercise_name', 'muscle_group');

@@ -18,8 +18,8 @@ public class RoutinesRepository {
 
         String query = "SELECT r.id, r.name, re.exercise_order, e.id, e.name, e.muscle_group " +
                                " FROM ROUTINES r " +
-                               " INNER JOIN ROUTINES_EXERCISES re on r.id = re.routine_id " +
-                               " INNER JOIN wapp_db.EXERCISES e on re.exercise_id = e.id " +
+                               " LEFT JOIN ROUTINES_EXERCISES re on r.id = re.routine_id " +
+                               " LEFT JOIN wapp_db.EXERCISES e on re.exercise_id = e.id " +
                                " where r.user_id = ? " +
                                " ORDER BY re.exercise_order;";
 
@@ -51,6 +51,9 @@ public class RoutinesRepository {
                 // Adiciona a rotina na lista de rotinas
                 routinesList.add(routineDto);
             }
+
+            String exerciseId = res.getString("e.id");
+            if (exerciseId == null) continue;
 
             // Cria um novo exercício
             ExerciseModel exerciseModel = new ExerciseModel();
