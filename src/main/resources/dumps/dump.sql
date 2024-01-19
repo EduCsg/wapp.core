@@ -47,10 +47,10 @@ CREATE TABLE EXERCISES
 
 CREATE TABLE ROUTINES_EXERCISES
 (
-    id          varchar(36) NOT NULL,
-    routine_id  varchar(36) NOT NULL,
-    exercise_id varchar(36) NOT NULL,
-    series      int         NOT NULL,
+    id             varchar(36) NOT NULL,
+    routine_id     varchar(36) NOT NULL,
+    exercise_id    varchar(36) NOT NULL,
+    exercise_order int         NOT NULL,
 
     PRIMARY KEY (id),
     FOREIGN KEY (routine_id) REFERENCES ROUTINES (id),
