@@ -61,6 +61,45 @@ public class RoutinesService {
         }
     }
 
+    public ResponseEntity<?> getRoutineById(String routineId) {
+        System.out.println("   [LOG] getRoutineById  ->  routineId: " + routineId);
+
+        Connection conn = null;
+        ResponseModel response = new ResponseModel();
+
+        try {
+            conn = databaseConfig.getConnection();
+
+            RoutineDto routine = routinesRepository.getRoutineById(conn, routineId);
+
+            if (routine == null) {
+                response.setStatus("404");
+                response.setSuccess(false);
+                response.setMessage("Nenhuma rotina encontrada!");
+
+                return ResponseEntity.status(404).body(response);
+            }
+
+            response.setData(routine);
+            response.setStatus("200");
+            response.setSuccess(true);
+            response.setMessage("Rotina encontrada com sucesso!");
+
+            return ResponseEntity.status(200).body(response);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            response.setStatus("500");
+            response.setSuccess(false);
+            response.setMessage("Erro: " + e.getMessage());
+
+            return ResponseEntity.status(500).body(response);
+        } finally {
+            if (conn != null) {
+                databaseConfig.closeConnection(conn);
+            }
+        }
+    }
+
     public ResponseEntity<?> postRoutine(String userId, RoutineDto routineDto) {
         String routineId = UUID.randomUUID().toString();
         routineDto.setId(routineId);

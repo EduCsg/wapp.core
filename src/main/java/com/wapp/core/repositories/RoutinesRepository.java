@@ -71,6 +71,46 @@ public class RoutinesRepository {
         return routinesList;
     }
 
+    public RoutineDto getRoutineById(Connection conn, String routineId) throws SQLException {
+
+        String query = "SELECT r.id, r.name, re.exercise_order, re.series, e.id, e.name, e.muscle_group " +
+                               " FROM ROUTINES r " +
+                               " LEFT JOIN ROUTINES_EXERCISES re on r.id = re.routine_id " +
+                               " LEFT JOIN wapp_db.EXERCISES e on re.exercise_id = e.id " +
+                               " WHERE r.id = ? " +
+                               " ORDER BY re.exercise_order;";
+
+        PreparedStatement stm = conn.prepareStatement(query);
+        stm.setString(1, routineId);
+
+        ResultSet res = stm.executeQuery();
+        RoutineDto routineDto = null;
+
+        while (res.next()) {
+            if (routineDto == null) {
+                routineDto = new RoutineDto();
+                routineDto.setId(res.getString("r.id"));
+                routineDto.setName(res.getString("r.name"));
+            }
+
+            String exerciseId = res.getString("e.id");
+            if (exerciseId == null) continue;
+
+            // Cria um novo exercício
+            ExerciseModel exerciseModel = new ExerciseModel();
+            exerciseModel.setId(res.getString("e.id"));
+            exerciseModel.setName(res.getString("e.name"));
+            exerciseModel.setMuscleGroup(res.getString("e.muscle_group"));
+            exerciseModel.setExerciseOrder(res.getInt("re.exercise_order"));
+            exerciseModel.setSeries(res.getInt("re.series"));
+
+            // Adiciona o exercício na rotina
+            routineDto.getExercises().add(exerciseModel);
+        }
+
+        return routineDto;
+    }
+
     public void postRoutine(Connection conn, String userId, RoutineDto routineDto) throws SQLException {
 
         String query = " INSERT INTO ROUTINES (id, user_id, name) VALUES (?, ?, ?); ";

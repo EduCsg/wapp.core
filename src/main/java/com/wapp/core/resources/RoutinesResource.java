@@ -18,6 +18,11 @@ public class RoutinesResource {
         return routinesService.getRoutineByUserId(userId);
     }
 
+    @GetMapping("/{routineId}")
+    public ResponseEntity<?> getRoutineById(@PathVariable String routineId) {
+        return routinesService.getRoutineById(routineId);
+    }
+
     @PostMapping("/create/{userId}")
     public ResponseEntity<?> createRoutine(@PathVariable String userId, @RequestBody RoutineDto routineDto) {
         return routinesService.postRoutine(userId, routineDto);
