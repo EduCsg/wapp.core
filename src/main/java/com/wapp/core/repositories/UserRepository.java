@@ -15,12 +15,13 @@ public class UserRepository {
 
     public UserDto getUserById(Connection conn, String userId) throws SQLException {
 
-        String query = "SELECT u.username, u.email, u.name, u.password, " +
+        String query = "SELECT u.username, u.email, u.name, " +
                                " um.age, um.body_fat, um.gender, um.height, um.inserted_at, um.weight " +
                                " FROM USERS u " +
                                " LEFT JOIN USER_METADATA um " +
                                " ON u.id = um.user_id " +
-                               " WHERE u.id = ?";
+                               " WHERE u.id = ? " +
+                               " ORDER BY um.inserted_at DESC LIMIT 1; ";
 
         PreparedStatement stm = conn.prepareStatement(query);
         stm.setString(1, userId);
