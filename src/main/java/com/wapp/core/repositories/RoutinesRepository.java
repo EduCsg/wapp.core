@@ -10,6 +10,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Repository
 public class RoutinesRepository {
@@ -94,7 +95,7 @@ public class RoutinesRepository {
 
         PreparedStatement stm = conn.prepareStatement(query);
 
-        stm.setString(1, exercise.getId());
+        stm.setString(1, UUID.randomUUID().toString());
         stm.setString(2, routineId);
         stm.setString(3, exercise.getId());
         stm.setInt(4, exercise.getExerciseOrder());

@@ -77,8 +77,6 @@ public class RoutinesService {
             routinesRepository.postRoutine(conn, userId, routineDto);
 
             for (ExerciseModel exercise : routineDto.getExercises()) {
-                exercise.setId(UUID.randomUUID().toString());
-
                 routinesRepository.linkRoutineToExercise(conn, routineDto.getId(), exercise);
             }
 
