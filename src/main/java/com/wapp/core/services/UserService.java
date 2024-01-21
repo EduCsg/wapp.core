@@ -98,7 +98,7 @@ public class UserService {
             response.setStatus("200");
             response.setSuccess(true);
             response.setMessage("Usuário cadastrado com sucesso!");
-            response.setData(userId);
+            response.setData(userModel);
 
             return ResponseEntity.ok(response);
 
