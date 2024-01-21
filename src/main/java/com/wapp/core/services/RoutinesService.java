@@ -148,4 +148,55 @@ public class RoutinesService {
         }
     }
 
+    public ResponseEntity<?> deleteRoutineById(String routineId) {
+        System.out.println("   [LOG] deleteRoutine -> routineId: " + routineId);
+
+        Connection conn = null;
+        ResponseModel response = new ResponseModel();
+
+        try {
+            conn = databaseConfig.getConnection();
+            conn.setAutoCommit(false);
+
+            int affectedRows = 0;
+
+            affectedRows += routinesRepository.deleteRoutineExercises(conn, routineId);
+            affectedRows += routinesRepository.deleteRoutineById(conn, routineId);
+
+            conn.commit();
+
+            if (affectedRows == 0) {
+                response.setMessage("Nenhuma rotina encontrada!");
+                response.setStatus("404");
+                response.setSuccess(false);
+
+                return ResponseEntity.status(404).body(response);
+            }
+
+            response.setMessage("Rotina deletada com sucesso!");
+            response.setStatus("200");
+            response.setSuccess(true);
+
+            return ResponseEntity.status(200).body(response);
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+
+            if (conn != null) {
+                databaseConfig.rollback(conn);
+            }
+
+            response.setMessage("Erro: " + e.getMessage());
+            response.setSuccess(false);
+            response.setStatus("500");
+
+            return ResponseEntity.status(500).body(response);
+        } finally {
+            if (conn != null) {
+                databaseConfig.enableAutoCommit(conn);
+                databaseConfig.closeConnection(conn);
+            }
+        }
+    }
+
 }

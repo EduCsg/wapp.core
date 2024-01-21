@@ -149,4 +149,26 @@ public class RoutinesRepository {
 
     }
 
+    public int deleteRoutineExercises(Connection conn, String routineId) throws SQLException {
+
+        String query = " DELETE FROM ROUTINES_EXERCISES WHERE routine_id = ?; ";
+
+        PreparedStatement stm = conn.prepareStatement(query);
+        stm.setString(1, routineId);
+
+        return stm.executeUpdate();
+
+    }
+
+    public int deleteRoutineById(Connection conn, String routineId) throws SQLException {
+
+        String query = " DELETE FROM ROUTINES WHERE id = ?; ";
+
+        PreparedStatement stm = conn.prepareStatement(query);
+        stm.setString(1, routineId);
+
+        return stm.executeUpdate();
+
+    }
+
 }

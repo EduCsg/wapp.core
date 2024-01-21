@@ -27,4 +27,9 @@ public class RoutinesResource {
     public ResponseEntity<?> createRoutine(@PathVariable String userId, @RequestBody RoutineDto routineDto) {
         return routinesService.postRoutine(userId, routineDto);
     }
+
+    @DeleteMapping("/{routineId}")
+    public ResponseEntity<?> deleteRoutine(@PathVariable String routineId) {
+        return routinesService.deleteRoutineById(routineId);
+    }
 }
