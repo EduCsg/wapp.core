@@ -54,7 +54,7 @@ public class UserService {
             e.printStackTrace();
             response.setStatus("500");
             response.setSuccess(false);
-            response.setMessage("Error: " + e.getMessage());
+            response.setMessage("Erro: " + e.getMessage());
 
             return ResponseEntity.status(500).body(response);
         } finally {
@@ -78,11 +78,11 @@ public class UserService {
             if (userExists.getUsername() != null || userExists.getEmail() != null) {
 
                 if (Objects.equals(userExists.getEmail(), userModel.getEmail()) && Objects.equals(userExists.getUsername(), userModel.getUsername()))
-                    response.setMessage("Email e username já cadastrados");
+                    response.setMessage("Email e Nome de Usuário já cadastrados!");
                 else if (Objects.equals(userExists.getEmail(), userModel.getEmail()))
-                    response.setMessage("Email já cadastrado");
+                    response.setMessage("Email já cadastrado!");
                 else if (Objects.equals(userExists.getUsername(), userModel.getUsername()))
-                    response.setMessage("Username já cadastrado");
+                    response.setMessage("Nome de Usuário já cadastrado!");
 
                 response.setStatus("400");
                 response.setSuccess(false);
@@ -97,7 +97,7 @@ public class UserService {
 
             response.setStatus("200");
             response.setSuccess(true);
-            response.setMessage("Usuário cadastrado com sucesso");
+            response.setMessage("Usuário cadastrado com sucesso!");
             response.setData(userId);
 
             return ResponseEntity.ok(response);
@@ -106,7 +106,7 @@ public class UserService {
             e.printStackTrace();
             response.setStatus("500");
             response.setSuccess(false);
-            response.setMessage("Error: " + e.getMessage());
+            response.setMessage("Erro: " + e.getMessage());
 
             return ResponseEntity.status(500).body(response);
         } finally {

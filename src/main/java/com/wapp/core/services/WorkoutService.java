@@ -34,13 +34,13 @@ public class WorkoutService {
             WorkoutModel workoutModel = workoutRepository.getWorkoutById(conn, workoutId);
 
             if (workoutModel.getId() == null) {
-                response.setMessage("Workout not found");
+                response.setMessage("Treino não encontrado!");
                 response.setSuccess(false);
                 response.setStatus("404");
                 return ResponseEntity.status(404).body(response);
             }
 
-            response.setMessage("Workout found");
+            response.setMessage("Treino encontrado com sucesso!");
             response.setSuccess(true);
             response.setStatus("200");
             response.setData(workoutModel);
@@ -49,7 +49,7 @@ public class WorkoutService {
         } catch (SQLException e) {
             e.printStackTrace();
 
-            response.setMessage("Error: " + e.getMessage());
+            response.setMessage("Erro: " + e.getMessage());
             response.setSuccess(false);
             response.setStatus("500");
             return ResponseEntity.status(500).body(response);

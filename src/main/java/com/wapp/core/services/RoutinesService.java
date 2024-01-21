@@ -34,7 +34,7 @@ public class RoutinesService {
             if (routineList.isEmpty()) {
                 response.setStatus("404");
                 response.setSuccess(false);
-                response.setMessage("Nenhuma rotina encontrada para o usuário!");
+                response.setMessage("Nenhuma rotina encontrada!");
 
                 return ResponseEntity.status(404).body(response);
             }
@@ -49,7 +49,7 @@ public class RoutinesService {
             e.printStackTrace();
             response.setStatus("500");
             response.setSuccess(false);
-            response.setMessage("Error: " + e.getMessage());
+            response.setMessage("Erro: " + e.getMessage());
 
             return ResponseEntity.status(500).body(response);
         } finally {

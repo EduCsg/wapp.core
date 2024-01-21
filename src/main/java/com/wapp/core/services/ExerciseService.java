@@ -31,7 +31,7 @@ public class ExerciseService {
             List<ExerciseModel> exerciseList = exerciseRepository.getExerciseList(conn, userId);
 
             if (exerciseList.isEmpty()) {
-                response.setMessage("No exercises found");
+                response.setMessage("Nenhum exercício encontrado!");
                 response.setSuccess(false);
                 response.setStatus("404");
                 response.setSuccess(false);
@@ -39,7 +39,7 @@ public class ExerciseService {
                 return ResponseEntity.notFound().build();
             }
 
-            response.setMessage("Success");
+            response.setMessage("Exercícios encontrados com sucesso!");
             response.setSuccess(true);
             response.setStatus("200");
             response.setData(exerciseList);
@@ -49,7 +49,7 @@ public class ExerciseService {
         } catch (Exception e) {
             e.printStackTrace();
 
-            response.setMessage("Error");
+            response.setMessage("Erro: " + e.getMessage());
             response.setSuccess(false);
             response.setStatus("400");
             response.setSuccess(false);
