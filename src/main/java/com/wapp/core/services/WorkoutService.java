@@ -115,10 +115,8 @@ public class WorkoutService {
             return ResponseEntity.status(500).body(response);
         } finally {
             if (conn != null) {
-                try {
-                    conn.setAutoCommit(true);
-                    conn.close();
-                } catch (SQLException ex) {}
+                databaseConfig.enableAutoCommit(conn);
+                databaseConfig.closeConnection(conn);
             }
         }
     }

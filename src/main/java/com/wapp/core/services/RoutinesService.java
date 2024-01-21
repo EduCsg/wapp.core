@@ -78,7 +78,7 @@ public class RoutinesService {
 
             for (ExerciseModel exercise : routineDto.getExercises()) {
                 exercise.setId(UUID.randomUUID().toString());
-                
+
                 routinesRepository.linkRoutineToExercise(conn, routineDto.getId(), exercise);
             }
 
@@ -105,6 +105,7 @@ public class RoutinesService {
             return ResponseEntity.status(500).body(response);
         } finally {
             if (conn != null) {
+                databaseConfig.enableAutoCommit(conn);
                 databaseConfig.closeConnection(conn);
             }
         }

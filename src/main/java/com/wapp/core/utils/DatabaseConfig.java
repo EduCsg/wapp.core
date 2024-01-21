@@ -37,4 +37,13 @@ public class DatabaseConfig {
             System.out.println("   [LOG] Error rolling back connection: " + ex.getMessage());
         }
     }
+
+    public void enableAutoCommit(Connection conn) {
+        try {
+            conn.setAutoCommit(true);
+        } catch (SQLException ex) {
+            System.out.println("   [LOG] Error setting autocommit: " + ex.getMessage());
+        }
+    }
+
 }
