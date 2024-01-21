@@ -29,4 +29,12 @@ public class DatabaseConfig {
             System.out.println("   [LOG] Error closing connection: " + ex.getMessage());
         }
     }
+
+    public void rollback(Connection conn) {
+        try {
+            conn.rollback();
+        } catch (SQLException ex) {
+            System.out.println("   [LOG] Error rolling back connection: " + ex.getMessage());
+        }
+    }
 }

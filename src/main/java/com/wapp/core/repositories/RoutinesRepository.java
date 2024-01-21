@@ -70,4 +70,42 @@ public class RoutinesRepository {
         return routinesList;
     }
 
+    public void postRoutine(Connection conn, String userId, RoutineDto routineDto) throws SQLException {
+
+        String query = " INSERT INTO ROUTINES (id, user_id, name) VALUES (?, ?, ?); ";
+
+        PreparedStatement stm = conn.prepareStatement(query);
+        stm.setString(1, routineDto.getId());
+        stm.setString(2, userId);
+        stm.setString(3, routineDto.getName());
+
+        int affectedRows = stm.executeUpdate();
+
+        if (affectedRows == 0) {
+            throw new SQLException("Erro ao criar rotina!");
+        }
+
+    }
+
+    public void linkRoutineToExercise(Connection conn, String routineId, ExerciseModel exercise) throws SQLException {
+
+        String query = " INSERT INTO ROUTINES_EXERCISES (id, routine_id, exercise_id, exercise_order, series) " +
+                               " VALUES (?, ?, ?, ?, ?); ";
+
+        PreparedStatement stm = conn.prepareStatement(query);
+
+        stm.setString(1, exercise.getId());
+        stm.setString(2, routineId);
+        stm.setString(3, exercise.getId());
+        stm.setInt(4, exercise.getExerciseOrder());
+        stm.setInt(5, exercise.getSeries());
+
+        int affectedRows = stm.executeUpdate();
+
+        if (affectedRows == 0) {
+            throw new SQLException("Erro ao vincular exercício!");
+        }
+
+    }
+
 }
