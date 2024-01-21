@@ -102,12 +102,10 @@ public class WorkoutService {
             return ResponseEntity.status(201).body(response);
 
         } catch (SQLException e) {
+            e.printStackTrace();
+
             if (conn != null) {
-                try {
-                    conn.rollback();
-                } catch (SQLException ex) {
-                    ex.printStackTrace();
-                }
+                databaseConfig.rollback(conn);
             }
 
             response.setMessage("Erro: " + e.getMessage());
