@@ -1,5 +1,7 @@
+# user - admin / pass - admin
 insert into USERS (id, username, password, email, name)
-values ('c1b21862-5911-4437-8d5a-1792bfd51801', 'admin_username', 'admin_pass', 'admin@test.com', 'admin_name');
+values ('c1b21862-5911-4437-8d5a-1792bfd51801', 'admin',
+        '$2a$12$96ZL19M.ML3yugtgCMvxbu3Ua0hPEYVIGTDM6wW1EIA927P0IRZGq', 'admin@wapp.com', 'admin_name');
 
 insert into USER_METADATA (id, user_id, height, weight, body_fat, gender, age, inserted_at)
 VALUES ('d848f795-5a3d-44b8-8e85-3cef10411181', 'c1b21862-5911-4437-8d5a-1792bfd51801', 170, 70, 16.5, 'Male', 19,
