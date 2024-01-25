@@ -7,6 +7,7 @@ import com.wapp.core.models.UserModel;
 import com.wapp.core.repositories.UserRepository;
 import com.wapp.core.utils.CryptoUtil;
 import com.wapp.core.utils.DatabaseConfig;
+import com.wapp.core.utils.JwtUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -92,6 +93,7 @@ public class UserService {
 
             userModel.setId(userId);
             userModel.setPassword(CryptoUtil.hashPassword(userModel.getPassword()));
+            userModel.setToken(JwtUtils.generateToken(userId, userModel.getUsername(), userModel.getEmail(), userModel.getName()));
 
             userRepository.registerUser(conn, userModel);
 

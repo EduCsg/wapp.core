@@ -10,6 +10,7 @@ public class UserModel {
     private String username;
     private String name;
     private String email;
+    private String token;
 
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;
