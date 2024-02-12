@@ -79,4 +79,25 @@ public class UserRepository {
         stm.executeUpdate();
     }
 
+    public UserModel loginUser(Connection conn, String identification) throws SQLException {
+
+        String query = "SELECT u.id, u.username, u.email, u.name, u.password FROM USERS u WHERE email = ? OR username = ?";
+
+        PreparedStatement stm = conn.prepareStatement(query);
+        stm.setString(1, identification);
+        stm.setString(2, identification);
+
+        ResultSet res = stm.executeQuery();
+
+        UserModel userModel = new UserModel();
+        if (! res.next()) return userModel;
+
+        userModel.setId(res.getString("u.id"));
+        userModel.setUsername(res.getString("u.username"));
+        userModel.setEmail(res.getString("u.email"));
+        userModel.setName(res.getString("u.name"));
+        userModel.setPassword(res.getString("u.password"));
+
+        return userModel;
+    }
 }

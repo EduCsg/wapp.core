@@ -23,4 +23,9 @@ public class UserResource {
         return userService.registerUser(userModel);
     }
 
+    @PostMapping("/login")
+    public ResponseEntity<?> loginUser(@RequestBody UserModel userModel) {
+        return userService.loginUser(userModel);
+    }
+
 }

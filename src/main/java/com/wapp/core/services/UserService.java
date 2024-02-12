@@ -117,4 +117,36 @@ public class UserService {
 
     }
 
+    public ResponseEntity<?> loginUser(UserModel userModel) {
+        System.out.println("   [LOG] Login  ->  " + userModel.getIdentification());
+
+        Connection conn = null;
+
+        try {
+            conn = databaseConfig.getConnection();
+
+            UserModel userLogin = userRepository.loginUser(conn, userModel.getIdentification());
+
+            if (userLogin.getUsername() == null || userLogin.getEmail() == null) {
+                return ResponseEntity.status(404).body("Usuário não cadastrado!");
+            }
+
+            if (! CryptoUtil.checkPassword(userModel.getPassword(), userLogin.getPassword())) {
+                return ResponseEntity.status(401).body("A senha está incorreta!");
+            }
+
+            userLogin.setToken(JwtUtils.generateToken(userLogin.getId(), userLogin.getUsername(), userLogin.getEmail(), userLogin.getName()));
+
+            return ResponseEntity.ok(userLogin);
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            if (conn != null) databaseConfig.closeConnection(conn);
+        }
+
+        return null;
+
+    }
+
 }

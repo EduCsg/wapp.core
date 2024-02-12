@@ -13,6 +13,9 @@ public class UserModel {
     private String token;
 
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    private String identification;
+    
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;
 
 }
