@@ -28,6 +28,7 @@ public class JwtUtils {
 
     public static boolean validateToken(String token) {
         try {
+            token = token.substring(7);
             Jwts.parserBuilder().setSigningKey(jwtSecret).build().parseClaimsJws(token).getBody();
             return true;
         } catch (Exception ex) {

@@ -10,6 +10,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 @Configuration
 public class AuthenticationFilter extends OncePerRequestFilter {
@@ -29,9 +31,15 @@ public class AuthenticationFilter extends OncePerRequestFilter {
     }
 
     @Override
-    protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
+    protected boolean shouldNotFilter(HttpServletRequest request) {
         String path = request.getRequestURI();
-        return path.equals("/v1/core/users/register") || path.equals("/healthCheck");
+        List<String> publicPaths = new ArrayList<>();
+
+        publicPaths.add("/v1/core/users/register");
+        publicPaths.add("/v1/core/users/login");
+        publicPaths.add("/healthCheck");
+
+        return publicPaths.contains(path);
     }
 
 }
