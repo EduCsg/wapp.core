@@ -121,6 +121,7 @@ public class UserService {
         System.out.println("   [LOG] Login  ->  " + userModel.getIdentification());
 
         Connection conn = null;
+        ResponseModel response = new ResponseModel();
 
         try {
             conn = databaseConfig.getConnection();
@@ -128,25 +129,40 @@ public class UserService {
             UserModel userLogin = userRepository.loginUser(conn, userModel.getIdentification());
 
             if (userLogin.getUsername() == null || userLogin.getEmail() == null) {
-                return ResponseEntity.status(404).body("Usuário não cadastrado!");
+                response.setStatus("404");
+                response.setSuccess(false);
+                response.setMessage("Usuário não encontrado!");
+
+                return ResponseEntity.status(404).body(response);
             }
 
             if (! CryptoUtil.checkPassword(userModel.getPassword(), userLogin.getPassword())) {
-                return ResponseEntity.status(401).body("A senha está incorreta!");
+                response.setStatus("401");
+                response.setSuccess(false);
+                response.setMessage("A senha está incorreta!");
+
+                return ResponseEntity.status(401).body(response);
             }
 
             userLogin.setToken(JwtUtils.generateToken(userLogin.getId(), userLogin.getUsername(), userLogin.getEmail(), userLogin.getName()));
 
-            return ResponseEntity.ok(userLogin);
+            response.setStatus("200");
+            response.setSuccess(true);
+            response.setMessage("Usuário logado com sucesso!");
+            response.setData(userLogin);
+
+            return ResponseEntity.ok(response);
 
         } catch (SQLException e) {
             e.printStackTrace();
+            response.setStatus("500");
+            response.setSuccess(false);
+            response.setMessage("Erro: " + e.getMessage());
+
+            return ResponseEntity.status(500).body(response);
         } finally {
             if (conn != null) databaseConfig.closeConnection(conn);
         }
-
-        return null;
-
     }
 
 }
