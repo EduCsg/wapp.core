@@ -9,6 +9,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 @Repository
 public class WorkoutRepository {
@@ -134,4 +136,90 @@ public class WorkoutRepository {
         exerciseSerieStm.executeUpdate();
     }
 
+    public List<WorkoutModel> getWorkoutsHistoryByUserId(Connection conn, String userId, Integer limit, Integer offset) throws SQLException {
+
+        String query = "SELECT w.id, w.name, w.description, w.date, w.duration, w.start_time, w.end_time, " +
+                               " ed.exercise_order, ed.id, ed.exercise_id, ed.description, e.name, e.muscle_group, " +
+                               " es.id, es.exercise_done_id, es.repetitions, es.weight, es.series_order, es.description " +
+                               " FROM WORKOUTS w " +
+                               "         INNER JOIN EXERCISES_DONE ed on w.id = ed.workout_id " +
+                               "         INNER JOIN EXERCISES e on ed.exercise_id = e.id and w.id = ed.workout_id " +
+                               "         INNER JOIN EXERCISES_SERIES es on ed.id = es.exercise_done_id " +
+                               " WHERE w.user_id = ? " +
+                               " ORDER BY w.date DESC, w.start_time DESC, ed.exercise_order ASC, es.series_order ASC ";
+
+        PreparedStatement stm = conn.prepareStatement(query);
+        stm.setString(1, userId);
+
+        ResultSet res = stm.executeQuery();
+
+        List<WorkoutModel> workoutsList = new ArrayList<>();
+
+        while (res.next()) {
+            SerieModel serieModel = new SerieModel();
+            ExerciseDto exerciseDto = null;
+            WorkoutModel workoutModel = null;
+
+            // Procura o exercício na lista de exercícios do workoutModel
+            for (WorkoutModel w : workoutsList) {
+                if (w.getId().equals(res.getString("w.id"))) {
+                    workoutModel = w;
+                    break;
+                }
+            }
+
+            // se o id do workout ainda não foi setado, seta
+            if (workoutModel == null) {
+                workoutModel = new WorkoutModel();
+
+                workoutModel.setId(res.getString("w.id"));
+                workoutModel.setName(res.getString("w.name"));
+                workoutModel.setUserId(userId);
+                workoutModel.setDescription(res.getString("w.description"));
+                workoutModel.setDate(res.getString("w.date"));
+                workoutModel.setDuration(res.getString("w.duration"));
+                workoutModel.setStartTime(res.getString("w.start_time"));
+                workoutModel.setEndTime(res.getString("w.end_time"));
+
+                workoutsList.add(workoutModel);
+            }
+
+            // Procura o exercício na lista de exercícios do workoutModel
+            for (ExerciseDto e : workoutModel.getExercises()) {
+                if (e.getId().equals(res.getString("ed.exercise_id"))) {
+                    exerciseDto = e;
+                    break;
+                }
+            }
+
+            // Se o exercício não foi encontrado, cria um novo
+            if (exerciseDto == null) {
+                exerciseDto = new ExerciseDto();
+
+                exerciseDto.setId(res.getString("ed.exercise_id"));
+                exerciseDto.setWorkoutId(res.getString("w.id"));
+                exerciseDto.setUserId(userId);
+                exerciseDto.setExerciseId(res.getString("ed.exercise_id"));
+                exerciseDto.setExerciseOrder(res.getInt("ed.exercise_order"));
+                exerciseDto.setDescription(res.getString("ed.description"));
+                exerciseDto.setName(res.getString("e.name"));
+                exerciseDto.setMuscleGroup(res.getString("e.muscle_group"));
+
+                workoutModel.getExercises().add(exerciseDto);
+            }
+
+            // Cria uma nova série e adiciona ao exercício
+            serieModel.setId(res.getString("es.id"));
+            serieModel.setExerciseDoneId(res.getString("es.exercise_done_id"));
+            serieModel.setRepetitions(res.getInt("es.repetitions"));
+            serieModel.setWeight(res.getInt("es.weight"));
+            serieModel.setSerieOrder(res.getInt("es.series_order"));
+            serieModel.setDescription(res.getString("es.description"));
+
+            exerciseDto.getSeries().add(serieModel);
+        }
+
+        return workoutsList;
+
+    }
 }
