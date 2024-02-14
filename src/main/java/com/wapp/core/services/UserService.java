@@ -2,11 +2,13 @@ package com.wapp.core.services;
 
 
 import com.wapp.core.dto.UserDto;
+import com.wapp.core.dto.UserMetadataDto;
 import com.wapp.core.models.ResponseModel;
 import com.wapp.core.models.UserModel;
 import com.wapp.core.repositories.UserRepository;
 import com.wapp.core.utils.CryptoUtil;
 import com.wapp.core.utils.DatabaseConfig;
+import com.wapp.core.utils.DateUtils;
 import com.wapp.core.utils.JwtUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -36,7 +38,7 @@ public class UserService {
             conn = databaseConfig.getConnection();
             UserDto userDto = userRepository.getUserById(conn, userId);
 
-            if (userDto.getId() == null) {
+            if (userDto.getUsername() == null) {
                 response.setStatus("404");
                 response.setSuccess(false);
                 response.setMessage("Usuário não encontrado");
@@ -153,6 +155,37 @@ public class UserService {
 
             return ResponseEntity.ok(response);
 
+        } catch (SQLException e) {
+            e.printStackTrace();
+            response.setStatus("500");
+            response.setSuccess(false);
+            response.setMessage("Erro: " + e.getMessage());
+
+            return ResponseEntity.status(500).body(response);
+        } finally {
+            if (conn != null) databaseConfig.closeConnection(conn);
+        }
+    }
+
+    public ResponseEntity<?> insertUserMetadata(String userId, UserMetadataDto userMetadataDto) {
+        System.out.println("   [LOG] insertUserMetadata  ->  userId: " + userId);
+
+        userMetadataDto.setInsertedAt(DateUtils.getCurrentDateTimeAsString());
+        userMetadataDto.setId(UUID.randomUUID().toString());
+
+        Connection conn = null;
+        ResponseModel response = new ResponseModel();
+
+        try {
+            conn = databaseConfig.getConnection();
+            userRepository.insertUserMetadata(conn, userId, userMetadataDto);
+
+            response.setStatus("200");
+            response.setSuccess(true);
+            response.setMessage("Dados do usuário inseridos com sucesso!");
+            response.setData(userMetadataDto);
+
+            return ResponseEntity.ok(response);
         } catch (SQLException e) {
             e.printStackTrace();
             response.setStatus("500");

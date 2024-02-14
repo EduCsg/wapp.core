@@ -1,9 +1,13 @@
 package com.wapp.core.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 @Data
-public class UserDto {
+public class UserMetadataDto {
+
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    private String id;
 
     private Float weight;
     private Integer height;
@@ -11,9 +15,5 @@ public class UserDto {
     private String gender;
     private Integer age;
     private String insertedAt;
-
-    private String username;
-    private String name;
-    private String email;
 
 }

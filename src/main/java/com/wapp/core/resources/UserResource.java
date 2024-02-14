@@ -1,5 +1,6 @@
 package com.wapp.core.resources;
 
+import com.wapp.core.dto.UserMetadataDto;
 import com.wapp.core.models.UserModel;
 import com.wapp.core.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +27,11 @@ public class UserResource {
     @PostMapping("/login")
     public ResponseEntity<?> loginUser(@RequestBody UserModel userModel) {
         return userService.loginUser(userModel);
+    }
+
+    @PostMapping("/metadata/{userId}")
+    public ResponseEntity<?> updateUserMetadata(@PathVariable String userId, @RequestBody UserMetadataDto userMetadataDto) {
+        return userService.insertUserMetadata(userId, userMetadataDto);
     }
 
 }

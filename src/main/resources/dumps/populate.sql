@@ -4,8 +4,8 @@ values ('c1b21862-5911-4437-8d5a-1792bfd51801', 'admin',
         '$2a$12$96ZL19M.ML3yugtgCMvxbu3Ua0hPEYVIGTDM6wW1EIA927P0IRZGq', 'admin@wapp.com', 'admin_name');
 
 insert into USER_METADATA (id, user_id, height, weight, body_fat, gender, age, inserted_at)
-VALUES ('d848f795-5a3d-44b8-8e85-3cef10411181', 'c1b21862-5911-4437-8d5a-1792bfd51801', 170, 70, 16.5, 'Male', 19,
-        '2023-12-31');
+VALUES ('d848f795-5a3d-44b8-8e85-3cef10411181', 'c1b21862-5911-4437-8d5a-1792bfd51801', 170, 70.25, 16.5, 'Male', 19,
+        '2023-12-31 00:00:00');
 
 insert into ROUTINES (id, user_id, name)
 values ('2efc196a-04b9-4f27-b70d-eeb70dcdb139', 'c1b21862-5911-4437-8d5a-1792bfd51801', 'Routine 01');
