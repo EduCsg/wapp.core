@@ -3,6 +3,7 @@ package com.wapp.core.resources;
 import com.wapp.core.dto.UserMetadataDto;
 import com.wapp.core.models.UserModel;
 import com.wapp.core.services.UserService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -20,7 +21,7 @@ public class UserResource {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<?> registerUser(@RequestBody UserModel userModel) {
+    public ResponseEntity<?> registerUser(@Valid @RequestBody UserModel userModel) {
         return userService.registerUser(userModel);
     }
 
