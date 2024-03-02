@@ -61,14 +61,13 @@ CREATE TABLE ROUTINES_EXERCISES
 
 CREATE TABLE WORKOUTS
 (
-    id          varchar(36)  NOT NULL,
-    user_id     varchar(36)  NOT NULL,
-    name        varchar(50)  NOT NULL,
-    description varchar(255) NOT NULL,
-    date        datetime     NOT NULL,
-    duration    int          NOT NULL,
-    start_time  time         NOT NULL,
-    end_time    time         NOT NULL,
+    id             varchar(36)  NOT NULL,
+    user_id        varchar(36)  NOT NULL,
+    name           varchar(50)  NOT NULL,
+    description    varchar(255) NOT NULL,
+    duration       int          NOT NULL,
+    start_datetime time         NOT NULL,
+    end_datetime   time         NOT NULL,
 
     PRIMARY KEY (id),
     FOREIGN KEY (user_id) REFERENCES USERS (id)

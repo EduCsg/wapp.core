@@ -6,6 +6,7 @@ import com.wapp.core.models.SerieModel;
 import com.wapp.core.models.WorkoutModel;
 import com.wapp.core.repositories.WorkoutRepository;
 import com.wapp.core.utils.DatabaseConfig;
+import com.wapp.core.utils.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -69,6 +70,8 @@ public class WorkoutService {
 
         ResponseModel response = new ResponseModel();
         workoutModel.setId(UUID.randomUUID().toString());
+        workoutModel.setEndDate(DateUtils.getCurrentTimestamp());
+
         Connection conn = null;
 
         try {

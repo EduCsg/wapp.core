@@ -3,6 +3,7 @@ package com.wapp.core.models;
 import com.wapp.core.dto.ExerciseDto;
 import lombok.Data;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,10 +14,9 @@ public class WorkoutModel {
     private String userId;
     private String name;
     private String description;
-    private String date;
     private String duration;
-    private String startTime;
-    private String endTime;
+    private Timestamp startDate;
+    private Timestamp endDate;
 
     private List<ExerciseDto> exercises = new ArrayList<>();
 }

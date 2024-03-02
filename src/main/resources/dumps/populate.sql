@@ -32,7 +32,7 @@ insert into ROUTINES_EXERCISES (id, routine_id, exercise_id, series, exercise_or
 values ('cc2b9174-cce8-4130-901d-9875b14b937a', '6084a1f0-cb3e-40d4-95a6-63e0e34077d4',
         '2739634f-6f48-47cf-9529-bc7cfe55585e', 4, 2);
 
-insert into WORKOUTS (id, user_id, name, description, date, duration, start_time, end_time)
+insert into WORKOUTS (id, user_id, name, description, date, duration, start_datetime, end_datetime)
 values ('bcaf10c5-56f5-41d9-aae6-4ea2e15734e0', 'c1b21862-5911-4437-8d5a-1792bfd51801', 'workout_name',
         'workout_description', '2023-12-31', 60, '10:00:00', '11:00:00');
 

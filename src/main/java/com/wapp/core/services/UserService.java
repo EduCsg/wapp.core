@@ -170,7 +170,7 @@ public class UserService {
     public ResponseEntity<?> insertUserMetadata(String userId, UserMetadataDto userMetadataDto) {
         System.out.println("   [LOG] insertUserMetadata  ->  userId: " + userId);
 
-        userMetadataDto.setInsertedAt(DateUtils.getCurrentDateTimeAsString());
+        userMetadataDto.setInsertedAt(DateUtils.getCurrentTimestamp());
         userMetadataDto.setId(UUID.randomUUID().toString());
 
         Connection conn = null;

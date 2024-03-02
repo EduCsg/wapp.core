@@ -3,6 +3,8 @@ package com.wapp.core.dto;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
+import java.sql.Timestamp;
+
 @Data
 public class UserMetadataDto {
 
@@ -14,6 +16,6 @@ public class UserMetadataDto {
     private Float bodyFat;
     private String gender;
     private Integer age;
-    private String insertedAt;
+    private Timestamp insertedAt;
 
 }

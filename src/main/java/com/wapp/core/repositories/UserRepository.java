@@ -114,7 +114,7 @@ public class UserRepository {
         stm.setDouble(5, userMetadataDto.getBodyFat());
         stm.setString(6, userMetadataDto.getGender());
         stm.setInt(7, userMetadataDto.getAge());
-        stm.setString(8, userMetadataDto.getInsertedAt());
+        stm.setTimestamp(8, userMetadataDto.getInsertedAt());
 
         stm.executeUpdate();
 
