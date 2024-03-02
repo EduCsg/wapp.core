@@ -66,8 +66,8 @@ CREATE TABLE WORKOUTS
     name           varchar(50)  NOT NULL,
     description    varchar(255) NOT NULL,
     duration       int          NOT NULL,
-    start_datetime time         NOT NULL,
-    end_datetime   time         NOT NULL,
+    start_datetime datetime     NOT NULL,
+    end_datetime   datetime     NOT NULL,
 
     PRIMARY KEY (id),
     FOREIGN KEY (user_id) REFERENCES USERS (id)
