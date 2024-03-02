@@ -126,7 +126,8 @@ public class WorkoutService {
     }
 
     public ResponseEntity<?> getWorkoutsHistoryByUserId(String userId, Integer limit, Integer offset) {
-
+        System.out.println("   [LOG] getWorkoutsHistoryByUserId  ->  userId: " + userId);
+        
         Connection conn = null;
         ResponseModel response = new ResponseModel();
 
