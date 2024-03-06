@@ -149,16 +149,72 @@ public class RoutinesRepository {
 
     }
 
-    public int deleteRoutineExercises(Connection conn, String routineId) throws SQLException {
+    public int deleteRoutineExercises(Connection conn, String routineId, String[] exercisesList) throws SQLException {
 
-        String query = " DELETE FROM ROUTINES_EXERCISES WHERE routine_id = ?; ";
+        String query = " DELETE FROM ROUTINES_EXERCISES WHERE routine_id = ? ";
+
+        if (exercisesList == null || exercisesList.length == 0) {
+            PreparedStatement stm = conn.prepareStatement(query);
+            stm.setString(1, routineId);
+
+            return stm.executeUpdate();
+        }
+
+        query += " AND exercise_id NOT IN (";
+        StringBuilder placeholders = new StringBuilder();
+        for (int i = 0; i < exercisesList.length; i++) {
+            query += "?";
+            placeholders.append("?, ");
+            if (i < exercisesList.length - 1) {
+                query += ", ";
+            }
+        }
+        query += ");";
+
+        if (placeholders.length() > 0) {
+            placeholders.setLength(placeholders.length() - 2);
+        }
 
         PreparedStatement stm = conn.prepareStatement(query);
         stm.setString(1, routineId);
 
+        int parameterIndex = 2;
+        for (String exerciseId : exercisesList) {
+            stm.setString(parameterIndex++, exerciseId);
+        }
+
         return stm.executeUpdate();
 
     }
+
+    public void updateRoutine(Connection conn, String routineId, RoutineDto routineDto, String[] exercisesList) throws SQLException {
+
+        // delete removed exercises
+        deleteRoutineExercises(conn, routineId, exercisesList);
+
+        // add/update exercises to routine
+        String query = " INSERT INTO ROUTINES_EXERCISES (id, routine_id, exercise_id, exercise_order, series) " +
+                               " VALUES (?, ?, ?, ?, ?) " +
+                               " ON DUPLICATE KEY UPDATE " +
+                               " exercise_order = VALUES(exercise_order), " +
+                               " series = VALUES(series); ";
+
+        PreparedStatement stm = conn.prepareStatement(query);
+
+        for (ExerciseModel exercise : routineDto.getExercises()) {
+            stm.setString(1, UUID.randomUUID().toString());
+            stm.setString(2, routineId);
+            stm.setString(3, exercise.getId());
+            stm.setInt(4, exercise.getExerciseOrder());
+            stm.setInt(5, exercise.getSeries());
+
+            stm.addBatch();
+        }
+
+        stm.executeBatch();
+
+    }
+
 
     public int deleteRoutineById(Connection conn, String routineId) throws SQLException {
 

@@ -55,7 +55,8 @@ CREATE TABLE ROUTINES_EXERCISES
 
     PRIMARY KEY (id),
     FOREIGN KEY (routine_id) REFERENCES ROUTINES (id),
-    FOREIGN KEY (exercise_id) REFERENCES EXERCISES (id)
+    FOREIGN KEY (exercise_id) REFERENCES EXERCISES (id),
+    UNIQUE KEY routine_exercise_key (routine_id, exercise_id)
 );
 
 

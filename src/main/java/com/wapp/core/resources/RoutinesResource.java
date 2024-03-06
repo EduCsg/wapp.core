@@ -28,6 +28,11 @@ public class RoutinesResource {
         return routinesService.postRoutine(userId, routineDto);
     }
 
+    @PutMapping("/{routineId}")
+    public ResponseEntity<?> updateRoutine(@PathVariable String routineId, @RequestBody RoutineDto routineDto) {
+        return routinesService.updateRoutine(routineId, routineDto);
+    }
+
     @DeleteMapping("/{routineId}")
     public ResponseEntity<?> deleteRoutine(@PathVariable String routineId) {
         return routinesService.deleteRoutineById(routineId);
