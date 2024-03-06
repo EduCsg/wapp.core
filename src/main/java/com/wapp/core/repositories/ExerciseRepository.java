@@ -40,4 +40,19 @@ public class ExerciseRepository {
 
     }
 
+    public int createExercise(Connection conn, String userId, ExerciseModel exerciseModel) throws SQLException {
+
+        String query = " INSERT INTO EXERCISES (id, name, muscle_group, inserted_by) " +
+                               " VALUES (?, ?, ?, ?); ";
+
+        PreparedStatement stm = conn.prepareStatement(query);
+
+        stm.setString(1, exerciseModel.getId());
+        stm.setString(2, exerciseModel.getName());
+        stm.setString(3, exerciseModel.getMuscleGroup());
+        stm.setString(4, userId);
+
+        return stm.executeUpdate();
+
+    }
 }

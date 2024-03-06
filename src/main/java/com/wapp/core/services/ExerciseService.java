@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import java.sql.Connection;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 public class ExerciseService {
@@ -61,4 +62,39 @@ public class ExerciseService {
 
     }
 
+    public ResponseEntity<?> createExercise(String userId, ExerciseModel exerciseModel) {
+        System.out.println("   [LOG] createExercise  ->  exerciseName: " + exerciseModel.getName());
+
+        ResponseModel response = new ResponseModel();
+        Connection conn = null;
+
+        try {
+            exerciseModel.setId(UUID.randomUUID().toString());
+
+            conn = databaseConfig.getConnection();
+            int result = exerciseRepository.createExercise(conn, userId, exerciseModel);
+
+            if (result == 0) {
+                response.setMessage("Houve um erro ao criar o exercício!");
+                response.setSuccess(false);
+                response.setStatus("400");
+                response.setSuccess(false);
+
+                return ResponseEntity.badRequest().body(response);
+            }
+
+            response.setMessage("Exercício criado com sucesso!");
+            response.setSuccess(true);
+            response.setStatus("201");
+            response.setData(exerciseModel);
+
+            return ResponseEntity.ok().body(response);
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (conn != null) databaseConfig.closeConnection(conn);
+        }
+
+        return null;
+    }
 }
