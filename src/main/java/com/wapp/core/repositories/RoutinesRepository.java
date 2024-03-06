@@ -187,12 +187,8 @@ public class RoutinesRepository {
 
     }
 
-    public void updateRoutine(Connection conn, String routineId, RoutineDto routineDto, String[] exercisesList) throws SQLException {
+    public void insertOrUpdateRoutine(Connection conn, String routineId, RoutineDto routineDto, String[] exercisesList) throws SQLException {
 
-        // delete removed exercises
-        deleteRoutineExercises(conn, routineId, exercisesList);
-
-        // add/update exercises to routine
         String query = " INSERT INTO ROUTINES_EXERCISES (id, routine_id, exercise_id, exercise_order, series) " +
                                " VALUES (?, ?, ?, ?, ?) " +
                                " ON DUPLICATE KEY UPDATE " +

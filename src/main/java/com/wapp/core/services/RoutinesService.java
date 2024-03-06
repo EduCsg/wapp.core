@@ -150,7 +150,7 @@ public class RoutinesService {
 
     public ResponseEntity<?> updateRoutine(String routineId, RoutineDto routineDto) {
         System.out.println("   [LOG] updateRoutine -> name/id: " + routineDto.getName() + " / " + routineDto.getId());
-        
+
         Connection conn = null;
         ResponseModel response = new ResponseModel();
         routineDto.setId(routineId);
@@ -161,7 +161,8 @@ public class RoutinesService {
 
             String[] exercisesList = routineDto.getExercises().stream().map(ExerciseModel::getId).toArray(String[]::new);
 
-            routinesRepository.updateRoutine(conn, routineId, routineDto, exercisesList);
+            routinesRepository.deleteRoutineExercises(conn, routineId, exercisesList);
+            routinesRepository.insertOrUpdateRoutine(conn, routineId, routineDto, exercisesList);
 
             response.setData(routineDto);
             response.setMessage("Rotina " + routineDto.getName() + " atualizada com sucesso!");
