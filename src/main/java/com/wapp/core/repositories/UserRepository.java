@@ -1,6 +1,7 @@
 package com.wapp.core.repositories;
 
 import com.wapp.core.dto.UserDto;
+import com.wapp.core.dto.UserMetadataDto;
 import com.wapp.core.models.UserModel;
 import org.springframework.stereotype.Repository;
 
@@ -31,16 +32,15 @@ public class UserRepository {
 
         if (! res.next()) return userDto;
 
-        userDto.setId(userId);
-        userDto.setWeight(res.getDouble("um.weight"));
-        userDto.setHeight(res.getDouble("um.height"));
+        userDto.setWeight(res.getFloat("um.weight"));
+        userDto.setHeight(res.getInt("um.height"));
         userDto.setUsername(res.getString("u.username"));
         userDto.setEmail(res.getString("u.email"));
         userDto.setName(res.getString("u.name"));
-        userDto.setBodyFat(res.getDouble("um.body_fat"));
+        userDto.setBodyFat(res.getFloat("um.body_fat"));
         userDto.setAge(res.getInt("um.age"));
         userDto.setGender(res.getString("um.gender"));
-        userDto.setCreatedAt(res.getString("um.inserted_at"));
+        userDto.setInsertedAt(res.getString("um.inserted_at"));
 
         return userDto;
 
@@ -100,4 +100,24 @@ public class UserRepository {
 
         return userModel;
     }
+
+    public void insertUserMetadata(Connection conn, String userId, UserMetadataDto userMetadataDto) throws SQLException {
+
+        String query = "INSERT INTO USER_METADATA (id, user_id, height, weight, body_fat, gender, age, inserted_at) " +
+                               "    VALUES (?, ?, ?, ?, ?, ?, ?, ?); ";
+
+        PreparedStatement stm = conn.prepareStatement(query);
+        stm.setString(1, userMetadataDto.getId());
+        stm.setString(2, userId);
+        stm.setInt(3, userMetadataDto.getHeight());
+        stm.setDouble(4, userMetadataDto.getWeight());
+        stm.setDouble(5, userMetadataDto.getBodyFat());
+        stm.setString(6, userMetadataDto.getGender());
+        stm.setInt(7, userMetadataDto.getAge());
+        stm.setTimestamp(8, userMetadataDto.getInsertedAt());
+
+        stm.executeUpdate();
+
+    }
+
 }

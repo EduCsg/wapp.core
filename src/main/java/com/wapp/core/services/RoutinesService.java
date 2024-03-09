@@ -148,6 +148,49 @@ public class RoutinesService {
         }
     }
 
+    public ResponseEntity<?> updateRoutine(String routineId, RoutineDto routineDto) {
+        System.out.println("   [LOG] updateRoutine -> name/id: " + routineDto.getName() + " / " + routineDto.getId());
+
+        Connection conn = null;
+        ResponseModel response = new ResponseModel();
+        routineDto.setId(routineId);
+
+        try {
+            conn = databaseConfig.getConnection();
+            conn.setAutoCommit(false);
+
+            String[] exercisesList = routineDto.getExercises().stream().map(ExerciseModel::getId).toArray(String[]::new);
+
+            routinesRepository.deleteRoutineExercises(conn, routineId, exercisesList);
+            routinesRepository.insertOrUpdateRoutine(conn, routineId, routineDto, exercisesList);
+
+            response.setData(routineDto);
+            response.setMessage("Rotina " + routineDto.getName() + " atualizada com sucesso!");
+            response.setStatus("200");
+            response.setSuccess(true);
+
+            return ResponseEntity.status(200).body(response);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+
+            if (conn != null) {
+                databaseConfig.rollback(conn);
+            }
+
+            response.setMessage("Erro: " + e.getMessage());
+            response.setSuccess(false);
+            response.setStatus("500");
+
+            return ResponseEntity.status(500).body(response);
+        } finally {
+            if (conn != null) {
+                databaseConfig.enableAutoCommit(conn);
+                databaseConfig.closeConnection(conn);
+            }
+        }
+    }
+
     public ResponseEntity<?> deleteRoutineById(String routineId) {
         System.out.println("   [LOG] deleteRoutine -> routineId: " + routineId);
 
@@ -160,7 +203,7 @@ public class RoutinesService {
 
             int affectedRows = 0;
 
-            affectedRows += routinesRepository.deleteRoutineExercises(conn, routineId);
+            affectedRows += routinesRepository.deleteRoutineExercises(conn, routineId, null);
             affectedRows += routinesRepository.deleteRoutineById(conn, routineId);
 
             conn.commit();

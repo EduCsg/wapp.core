@@ -40,4 +40,51 @@ public class ExerciseRepository {
 
     }
 
+    public int createExercise(Connection conn, String userId, ExerciseModel exerciseModel) throws SQLException {
+
+        String query = " INSERT INTO EXERCISES (id, name, muscle_group, inserted_by) " +
+                               " VALUES (?, ?, ?, ?); ";
+
+        PreparedStatement stm = conn.prepareStatement(query);
+
+        stm.setString(1, exerciseModel.getId());
+        stm.setString(2, exerciseModel.getName());
+        stm.setString(3, exerciseModel.getMuscleGroup());
+        stm.setString(4, userId);
+
+        return stm.executeUpdate();
+
+    }
+
+    public int deleteExerciseById(Connection conn, String userId, String exerciseId) throws SQLException {
+
+        String query = " DELETE FROM EXERCISES WHERE id = ? AND inserted_by = ?;";
+
+        PreparedStatement stm = conn.prepareStatement(query);
+        stm.setString(1, exerciseId);
+        stm.setString(2, userId);
+
+        return stm.executeUpdate();
+
+    }
+
+    public int deleteMultipleExercises(Connection conn, String userId, String[] exerciseIds) throws SQLException {
+
+        String query = " DELETE FROM EXERCISES WHERE inserted_by = ? AND id IN (";
+
+        for (int i = 0; i < exerciseIds.length; i++) {
+            query += "?, ";
+        }
+
+        query = query.substring(0, query.length() - 2) + ");";
+
+        PreparedStatement stm = conn.prepareStatement(query);
+
+        stm.setString(1, userId);
+        for (int i = 0; i < exerciseIds.length; i++) {
+            stm.setString(i + 2, exerciseIds[i]);
+        }
+        
+        return stm.executeUpdate();
+    }
 }

@@ -1,11 +1,10 @@
-# user - admin / pass - admin
 insert into USERS (id, username, password, email, name)
 values ('c1b21862-5911-4437-8d5a-1792bfd51801', 'admin',
-        '$2a$12$96ZL19M.ML3yugtgCMvxbu3Ua0hPEYVIGTDM6wW1EIA927P0IRZGq', 'admin@wapp.com', 'admin_name');
+        '$2a$12$4flzpBUy/jRfjJAHEC944.c947To53uwl11CfwD24baY6HeWgGmde', 'admin@wapp.com', 'admin_name');
 
 insert into USER_METADATA (id, user_id, height, weight, body_fat, gender, age, inserted_at)
-VALUES ('d848f795-5a3d-44b8-8e85-3cef10411181', 'c1b21862-5911-4437-8d5a-1792bfd51801', 170, 70, 16.5, 'Male', 19,
-        '2023-12-31');
+VALUES ('d848f795-5a3d-44b8-8e85-3cef10411181', 'c1b21862-5911-4437-8d5a-1792bfd51801', 170, 70.25, 16.5, 'Male', 19,
+        '2023-12-31 00:00:00');
 
 insert into ROUTINES (id, user_id, name)
 values ('2efc196a-04b9-4f27-b70d-eeb70dcdb139', 'c1b21862-5911-4437-8d5a-1792bfd51801', 'Routine 01');
@@ -33,9 +32,9 @@ insert into ROUTINES_EXERCISES (id, routine_id, exercise_id, series, exercise_or
 values ('cc2b9174-cce8-4130-901d-9875b14b937a', '6084a1f0-cb3e-40d4-95a6-63e0e34077d4',
         '2739634f-6f48-47cf-9529-bc7cfe55585e', 4, 2);
 
-insert into WORKOUTS (id, user_id, name, description, date, duration, start_time, end_time)
+insert into WORKOUTS (id, user_id, name, description, duration, start_datetime, end_datetime)
 values ('bcaf10c5-56f5-41d9-aae6-4ea2e15734e0', 'c1b21862-5911-4437-8d5a-1792bfd51801', 'workout_name',
-        'workout_description', '2023-12-31', 60, '10:00:00', '11:00:00');
+        'workout_description', 60, '2024-12-31 00:00:00', '2024-12-31 23:59:59');
 
 insert into EXERCISES_DONE (id, workout_id, user_id, exercise_id, exercise_order, description)
 values ('c0e7a1b5-b328-499d-ba2f-52b372c57ecc', 'bcaf10c5-56f5-41d9-aae6-4ea2e15734e0',

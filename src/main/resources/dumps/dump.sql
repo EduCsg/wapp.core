@@ -13,12 +13,12 @@ CREATE TABLE USER_METADATA
 (
     id          varchar(36) NOT NULL,
     user_id     varchar(36) NOT NULL,
-    height      int         NOT NULL,
-    weight      int         NOT NULL,
-    body_fat    int         NOT NULL,
-    gender      varchar(50) NOT NULL,
-    age         int         NOT NULL,
-    inserted_at date        NOT NULL,
+    height      int,
+    weight      decimal(5, 2),
+    body_fat    decimal(5, 2),
+    gender      varchar(50),
+    age         int,
+    inserted_at datetime    NOT NULL,
 
     PRIMARY KEY (id),
     FOREIGN KEY (user_id) REFERENCES USERS (id)
@@ -55,20 +55,20 @@ CREATE TABLE ROUTINES_EXERCISES
 
     PRIMARY KEY (id),
     FOREIGN KEY (routine_id) REFERENCES ROUTINES (id),
-    FOREIGN KEY (exercise_id) REFERENCES EXERCISES (id)
+    FOREIGN KEY (exercise_id) REFERENCES EXERCISES (id),
+    UNIQUE KEY routine_exercise_key (routine_id, exercise_id)
 );
 
 
 CREATE TABLE WORKOUTS
 (
-    id          varchar(36)  NOT NULL,
-    user_id     varchar(36)  NOT NULL,
-    name        varchar(50)  NOT NULL,
-    description varchar(255) NOT NULL,
-    date        date         NOT NULL,
-    duration    int          NOT NULL,
-    start_time  time         NOT NULL,
-    end_time    time         NOT NULL,
+    id             varchar(36)  NOT NULL,
+    user_id        varchar(36)  NOT NULL,
+    name           varchar(50)  NOT NULL,
+    description    varchar(255) NOT NULL,
+    duration       int          NOT NULL,
+    start_datetime datetime     NOT NULL,
+    end_datetime   datetime     NOT NULL,
 
     PRIMARY KEY (id),
     FOREIGN KEY (user_id) REFERENCES USERS (id)

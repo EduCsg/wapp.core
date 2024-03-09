@@ -6,12 +6,14 @@ import com.wapp.core.models.SerieModel;
 import com.wapp.core.models.WorkoutModel;
 import com.wapp.core.repositories.WorkoutRepository;
 import com.wapp.core.utils.DatabaseConfig;
+import com.wapp.core.utils.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -61,13 +63,15 @@ public class WorkoutService {
     }
 
     public ResponseEntity<?> createWorkout(WorkoutModel workoutModel) {
-        System.out.println("   [LOG] createWorkout  ->  workoutModel: " + workoutModel.toString());
+        System.out.println("   [LOG] createWorkout  ->  userId: " + workoutModel.getUserId());
 
         // Insere na ordem do banco de dados (PKs e FKs)
         // -> workout -> exercises_done -> exercises_series
 
         ResponseModel response = new ResponseModel();
         workoutModel.setId(UUID.randomUUID().toString());
+        workoutModel.setEndDate(DateUtils.getCurrentTimestamp());
+
         Connection conn = null;
 
         try {
@@ -120,4 +124,45 @@ public class WorkoutService {
             }
         }
     }
+
+    public ResponseEntity<?> getWorkoutsHistoryByUserId(String userId, Integer limit, Integer offset) {
+        System.out.println("   [LOG] getWorkoutsHistoryByUserId  ->  userId: " + userId);
+        
+        Connection conn = null;
+        ResponseModel response = new ResponseModel();
+
+        try {
+            conn = databaseConfig.getConnection();
+
+            List<WorkoutModel> workoutsList = workoutRepository.getWorkoutsHistoryByUserId(conn, userId, limit, offset);
+
+            if (workoutsList.isEmpty()) {
+                response.setMessage("Nenhum treino encontrado!");
+                response.setSuccess(false);
+                response.setStatus("404");
+                return ResponseEntity.status(404).body(response);
+            }
+
+            response.setMessage(workoutsList.size() + " treinos encontrados!");
+            response.setSuccess(true);
+            response.setStatus("200");
+            response.setData(workoutsList);
+
+            return ResponseEntity.ok(response);
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+
+            response.setMessage("Erro: " + e.getMessage());
+            response.setSuccess(false);
+            response.setStatus("500");
+
+            return ResponseEntity.status(500).body(response);
+        } finally {
+            if (conn != null) {
+                databaseConfig.closeConnection(conn);
+            }
+        }
+    }
+
 }
