@@ -23,4 +23,14 @@ public class ExerciseResource {
         return exerciseService.getExerciseList(userId);
     }
 
+    @DeleteMapping("/{userId}/{exerciseId}")
+    public ResponseEntity<?> deleteExercise(@PathVariable String userId, @PathVariable String exerciseId) {
+        return exerciseService.deleteExerciseById(userId, exerciseId);
+    }
+
+    @DeleteMapping("/{userId}")
+    public ResponseEntity<?> deleteAllExercises(@PathVariable String userId, @RequestParam String[] exercisesIds) {
+        return exerciseService.deleteMultipleExercises(userId, exercisesIds);
+    }
+
 }

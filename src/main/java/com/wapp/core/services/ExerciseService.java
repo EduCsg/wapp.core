@@ -97,4 +97,99 @@ public class ExerciseService {
 
         return null;
     }
+
+    public ResponseEntity<?> deleteExerciseById(String userId, String exerciseId) {
+        System.out.println("   [LOG] deleteExerciseById  ->  " + exerciseId);
+
+        Connection conn = null;
+        ResponseModel response = new ResponseModel();
+
+        try {
+            conn = databaseConfig.getConnection();
+
+            int result = exerciseRepository.deleteExerciseById(conn, userId, exerciseId);
+
+            if (result == 0) {
+                response.setMessage("Houve um erro ao deletar o exercício!");
+                response.setSuccess(false);
+                response.setStatus("400");
+                response.setSuccess(false);
+
+                return ResponseEntity.badRequest().body(response);
+            }
+
+            response.setMessage("Exercício deletado com sucesso!");
+            response.setSuccess(true);
+            response.setStatus("200");
+            response.setData(exerciseId);
+
+            return ResponseEntity.ok().body(response);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+
+            response.setMessage("Erro: " + e.getMessage());
+            response.setSuccess(false);
+            response.setStatus("400");
+            response.setSuccess(false);
+
+            return ResponseEntity.badRequest().body(response);
+
+        } finally {
+            if (conn != null) databaseConfig.closeConnection(conn);
+        }
+
+    }
+
+    public ResponseEntity<?> deleteMultipleExercises(String userId, String[] exerciseIds) {
+        System.out.println("   [LOG] deleteMultipleExercises  ->  userId: " + userId);
+
+        Connection conn = null;
+        ResponseModel response = new ResponseModel();
+
+        try {
+            conn = databaseConfig.getConnection();
+
+            int result = exerciseRepository.deleteMultipleExercises(conn, userId, exerciseIds);
+
+            if (result == 0) {
+                response.setMessage("Houve um erro ao deletar os exercícios!");
+                response.setSuccess(false);
+                response.setStatus("400");
+                response.setSuccess(false);
+
+                return ResponseEntity.badRequest().body(response);
+            }
+
+            if (result == exerciseIds.length) {
+                response.setMessage("Todos exercícios deletados com sucesso!");
+                response.setSuccess(true);
+                response.setStatus("200");
+                response.setData(exerciseIds);
+
+                return ResponseEntity.ok().body(response);
+            }
+
+            response.setMessage(result + " exercícios deletados com sucesso!");
+            response.setSuccess(true);
+            response.setStatus("200");
+
+            return ResponseEntity.ok().body(response);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+
+            response.setMessage("Erro: " + e.getMessage());
+            response.setSuccess(false);
+            response.setStatus("400");
+            response.setSuccess(false);
+
+            return ResponseEntity.badRequest().body(response);
+
+        } finally {
+            if (conn != null) databaseConfig.closeConnection(conn);
+        }
+
+    }
+
 }
