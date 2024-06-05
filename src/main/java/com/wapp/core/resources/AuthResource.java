@@ -9,9 +9,9 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/v1/core/auth")
 public class AuthResource {
 
-    @GetMapping("/")
-    public ResponseEntity<?> healthCheck() {
-        return ResponseEntity.ok("Token válido!");
-    }
+	@GetMapping("/")
+	public ResponseEntity<?> validateToken() {
+		return ResponseEntity.ok("Token válido!");
+	}
 
 }

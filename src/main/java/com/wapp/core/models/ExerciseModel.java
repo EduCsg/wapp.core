@@ -7,10 +7,10 @@ import lombok.Data;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ExerciseModel {
 
-    private String id;
-    private String name;
-    private String muscleGroup;
-    private Integer exerciseOrder;
-    private Integer series;
+	private String id;
+	private String name;
+	private String muscleGroup;
+	private Integer exerciseOrder;
+	private Integer series;
 
 }

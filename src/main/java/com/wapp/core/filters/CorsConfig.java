@@ -1,38 +1,19 @@
 package com.wapp.core.filters;
 
-import jakarta.servlet.*;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
-
-import java.io.IOException;
-
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Component
 @Order(Ordered.HIGHEST_PRECEDENCE)
-public class CorsConfig implements Filter {
+public class CorsConfig implements WebMvcConfigurer {
 
-    @Override
-    public void doFilter(ServletRequest req, ServletResponse resp, FilterChain chain)
-            throws IOException, ServletException {
-
-        HttpServletRequest request = (HttpServletRequest) req;
-        HttpServletResponse response = (HttpServletResponse) resp;
-
-        response.setHeader("Access-Control-Allow-Origin", "*");
-        response.setHeader("Access-Control-Allow-Credentials", "true");
-
-        if ("OPTIONS".equals(request.getMethod())) {
-            response.setHeader("Access-Control-Allow-Methods", "POST, GET, DELETE, PUT, OPTIONS");
-            response.setHeader("Access-Control-Allow-Headers", "Authorization, Content-Type, Accept");
-            response.setHeader("Access-Control-Max-Age", "3600");
-
-            response.setStatus(HttpServletResponse.SC_OK);
-        } else {
-            chain.doFilter(req, resp);
-        }
-    }
+	@Override
+	public void addCorsMappings(CorsRegistry registry) {
+		registry.addMapping("/**").allowedOrigins("*").allowedMethods("POST", "GET", "DELETE", "PUT", "OPTIONS")
+				.allowedHeaders("Authorization", "Content-Type", "Accept").allowCredentials(true).maxAge(3600);
+	}
 
 }

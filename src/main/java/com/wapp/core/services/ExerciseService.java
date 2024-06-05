@@ -1,195 +1,200 @@
 package com.wapp.core.services;
 
-import com.wapp.core.models.ExerciseModel;
-import com.wapp.core.models.ResponseModel;
-import com.wapp.core.repositories.ExerciseRepository;
-import com.wapp.core.utils.DatabaseConfig;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Service;
-
 import java.sql.Connection;
 import java.util.List;
 import java.util.UUID;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
+
+import com.wapp.core.models.ExerciseModel;
+import com.wapp.core.models.ResponseModel;
+import com.wapp.core.repositories.ExerciseRepository;
+import com.wapp.core.utils.DatabaseConfig;
+import com.wapp.core.utils.ValidationUtils;
+
 @Service
 public class ExerciseService {
 
-    @Autowired
-    DatabaseConfig databaseConfig;
+	@Autowired
+	DatabaseConfig databaseConfig;
 
-    @Autowired
-    ExerciseRepository exerciseRepository;
+	@Autowired
+	ExerciseRepository exerciseRepository;
 
-    public ResponseEntity<?> getExerciseList(String userId) {
-        System.out.println("   [LOG] getExerciseList  ->  userId: " + userId);
+	public ResponseEntity<?> getExerciseList(String userId) {
+		System.out.println("   [LOG] getExerciseList  ->  userId: " + userId);
 
-        ResponseModel response = new ResponseModel();
-        Connection conn = null;
+		ResponseModel response = new ResponseModel();
+		Connection conn = null;
 
-        try {
-            conn = databaseConfig.getConnection();
-            List<ExerciseModel> exerciseList = exerciseRepository.getExerciseList(conn, userId);
+		try {
+			conn = databaseConfig.getConnection();
+			List<ExerciseModel> exerciseList = exerciseRepository.getExerciseList(conn, userId);
 
-            if (exerciseList.isEmpty()) {
-                response.setMessage("Nenhum exercício encontrado!");
-                response.setSuccess(false);
-                response.setStatus("404");
-                response.setSuccess(false);
+			if (ValidationUtils.isEmpty(exerciseList)) {
+				response.setMessage("Nenhum exercício encontrado!");
+				response.setSuccess(false);
+				response.setStatus("404");
+				response.setSuccess(false);
 
-                return ResponseEntity.notFound().build();
-            }
+				return ResponseEntity.notFound().build();
+			}
 
-            response.setMessage("Exercícios encontrados com sucesso!");
-            response.setSuccess(true);
-            response.setStatus("200");
-            response.setData(exerciseList);
+			response.setMessage("Exercícios encontrados com sucesso!");
+			response.setSuccess(true);
+			response.setStatus("200");
+			response.setData(exerciseList);
 
-            return ResponseEntity.ok().body(response);
+			return ResponseEntity.ok().body(response);
+		} catch (Exception e) {
+			e.printStackTrace();
 
-        } catch (Exception e) {
-            e.printStackTrace();
+			response.setMessage("Erro: " + e.getMessage());
+			response.setSuccess(false);
+			response.setStatus("400");
+			response.setSuccess(false);
 
-            response.setMessage("Erro: " + e.getMessage());
-            response.setSuccess(false);
-            response.setStatus("400");
-            response.setSuccess(false);
+			return ResponseEntity.badRequest().body(response);
+		} finally {
+			if (conn != null)
+				databaseConfig.closeConnection(conn);
+		}
 
-            return ResponseEntity.badRequest().body(response);
-        } finally {
-            if (conn != null) databaseConfig.closeConnection(conn);
-        }
+	}
 
-    }
+	public ResponseEntity<?> createExercise(String userId, ExerciseModel exerciseModel) {
+		System.out.println("   [LOG] createExercise  ->  exerciseName: " + exerciseModel.getName());
 
-    public ResponseEntity<?> createExercise(String userId, ExerciseModel exerciseModel) {
-        System.out.println("   [LOG] createExercise  ->  exerciseName: " + exerciseModel.getName());
+		ResponseModel response = new ResponseModel();
+		Connection conn = null;
 
-        ResponseModel response = new ResponseModel();
-        Connection conn = null;
+		try {
+			exerciseModel.setId(UUID.randomUUID().toString());
 
-        try {
-            exerciseModel.setId(UUID.randomUUID().toString());
+			conn = databaseConfig.getConnection();
+			int result = exerciseRepository.createExercise(conn, userId, exerciseModel);
 
-            conn = databaseConfig.getConnection();
-            int result = exerciseRepository.createExercise(conn, userId, exerciseModel);
+			if (result == 0) {
+				response.setMessage("Houve um erro ao criar o exercício!");
+				response.setSuccess(false);
+				response.setStatus("400");
+				response.setSuccess(false);
 
-            if (result == 0) {
-                response.setMessage("Houve um erro ao criar o exercício!");
-                response.setSuccess(false);
-                response.setStatus("400");
-                response.setSuccess(false);
+				return ResponseEntity.badRequest().body(response);
+			}
 
-                return ResponseEntity.badRequest().body(response);
-            }
+			response.setMessage("Exercício criado com sucesso!");
+			response.setSuccess(true);
+			response.setStatus("201");
+			response.setData(exerciseModel);
 
-            response.setMessage("Exercício criado com sucesso!");
-            response.setSuccess(true);
-            response.setStatus("201");
-            response.setData(exerciseModel);
+			return ResponseEntity.ok().body(response);
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			if (conn != null)
+				databaseConfig.closeConnection(conn);
+		}
 
-            return ResponseEntity.ok().body(response);
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            if (conn != null) databaseConfig.closeConnection(conn);
-        }
+		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+	}
 
-        return null;
-    }
+	public ResponseEntity<?> deleteExerciseById(String userId, String exerciseId) {
+		System.out.println("   [LOG] deleteExerciseById  ->  " + exerciseId);
 
-    public ResponseEntity<?> deleteExerciseById(String userId, String exerciseId) {
-        System.out.println("   [LOG] deleteExerciseById  ->  " + exerciseId);
+		Connection conn = null;
+		ResponseModel response = new ResponseModel();
 
-        Connection conn = null;
-        ResponseModel response = new ResponseModel();
+		try {
+			conn = databaseConfig.getConnection();
 
-        try {
-            conn = databaseConfig.getConnection();
+			int result = exerciseRepository.deleteExerciseById(conn, userId, exerciseId);
 
-            int result = exerciseRepository.deleteExerciseById(conn, userId, exerciseId);
+			if (result == 0) {
+				response.setMessage("Houve um erro ao deletar o exercício!");
+				response.setSuccess(false);
+				response.setStatus("400");
+				response.setSuccess(false);
 
-            if (result == 0) {
-                response.setMessage("Houve um erro ao deletar o exercício!");
-                response.setSuccess(false);
-                response.setStatus("400");
-                response.setSuccess(false);
+				return ResponseEntity.badRequest().body(response);
+			}
 
-                return ResponseEntity.badRequest().body(response);
-            }
+			response.setMessage("Exercício deletado com sucesso!");
+			response.setSuccess(true);
+			response.setStatus("200");
+			response.setData(exerciseId);
 
-            response.setMessage("Exercício deletado com sucesso!");
-            response.setSuccess(true);
-            response.setStatus("200");
-            response.setData(exerciseId);
+			return ResponseEntity.ok().body(response);
 
-            return ResponseEntity.ok().body(response);
+		} catch (Exception e) {
+			e.printStackTrace();
 
-        } catch (Exception e) {
-            e.printStackTrace();
+			response.setMessage("Erro: " + e.getMessage());
+			response.setSuccess(false);
+			response.setStatus("400");
+			response.setSuccess(false);
 
-            response.setMessage("Erro: " + e.getMessage());
-            response.setSuccess(false);
-            response.setStatus("400");
-            response.setSuccess(false);
+			return ResponseEntity.badRequest().body(response);
 
-            return ResponseEntity.badRequest().body(response);
+		} finally {
+			if (conn != null)
+				databaseConfig.closeConnection(conn);
+		}
 
-        } finally {
-            if (conn != null) databaseConfig.closeConnection(conn);
-        }
+	}
 
-    }
+	public ResponseEntity<?> deleteMultipleExercises(String userId, List<String> exerciseIds) {
+		System.out.println("   [LOG] deleteMultipleExercises  ->  userId: " + userId);
 
-    public ResponseEntity<?> deleteMultipleExercises(String userId, String[] exerciseIds) {
-        System.out.println("   [LOG] deleteMultipleExercises  ->  userId: " + userId);
+		Connection conn = null;
+		ResponseModel response = new ResponseModel();
 
-        Connection conn = null;
-        ResponseModel response = new ResponseModel();
+		try {
+			conn = databaseConfig.getConnection();
 
-        try {
-            conn = databaseConfig.getConnection();
+			int result = exerciseRepository.deleteMultipleExercises(conn, userId, exerciseIds);
 
-            int result = exerciseRepository.deleteMultipleExercises(conn, userId, exerciseIds);
+			if (result == 0) {
+				response.setMessage("Houve um erro ao deletar os exercícios!");
+				response.setSuccess(false);
+				response.setStatus("400");
+				response.setSuccess(false);
 
-            if (result == 0) {
-                response.setMessage("Houve um erro ao deletar os exercícios!");
-                response.setSuccess(false);
-                response.setStatus("400");
-                response.setSuccess(false);
+				return ResponseEntity.badRequest().body(response);
+			}
 
-                return ResponseEntity.badRequest().body(response);
-            }
+			if (result == exerciseIds.size()) {
+				response.setMessage("Todos exercícios deletados com sucesso!");
+				response.setSuccess(true);
+				response.setStatus("200");
+				response.setData(exerciseIds);
 
-            if (result == exerciseIds.length) {
-                response.setMessage("Todos exercícios deletados com sucesso!");
-                response.setSuccess(true);
-                response.setStatus("200");
-                response.setData(exerciseIds);
+				return ResponseEntity.ok().body(response);
+			}
 
-                return ResponseEntity.ok().body(response);
-            }
+			response.setMessage(result + " exercícios deletados com sucesso!");
+			response.setSuccess(true);
+			response.setStatus("200");
 
-            response.setMessage(result + " exercícios deletados com sucesso!");
-            response.setSuccess(true);
-            response.setStatus("200");
+			return ResponseEntity.ok().body(response);
+		} catch (Exception e) {
+			e.printStackTrace();
 
-            return ResponseEntity.ok().body(response);
+			response.setMessage("Erro: " + e.getMessage());
+			response.setSuccess(false);
+			response.setStatus("400");
+			response.setSuccess(false);
 
-        } catch (Exception e) {
-            e.printStackTrace();
+			return ResponseEntity.badRequest().body(response);
 
-            response.setMessage("Erro: " + e.getMessage());
-            response.setSuccess(false);
-            response.setStatus("400");
-            response.setSuccess(false);
+		} finally {
+			if (conn != null)
+				databaseConfig.closeConnection(conn);
+		}
 
-            return ResponseEntity.badRequest().body(response);
-
-        } finally {
-            if (conn != null) databaseConfig.closeConnection(conn);
-        }
-
-    }
+	}
 
 }

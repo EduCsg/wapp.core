@@ -1,201 +1,210 @@
 package com.wapp.core.services;
 
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.UUID;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
 
 import com.wapp.core.dto.UserDto;
 import com.wapp.core.dto.UserMetadataDto;
 import com.wapp.core.models.ResponseModel;
 import com.wapp.core.models.UserModel;
 import com.wapp.core.repositories.UserRepository;
-import com.wapp.core.utils.CryptoUtil;
-import com.wapp.core.utils.DatabaseConfig;
-import com.wapp.core.utils.DateUtils;
-import com.wapp.core.utils.JwtUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Service;
-
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.Objects;
-import java.util.UUID;
+import com.wapp.core.utils.*;
 
 @Service
 public class UserService {
 
-    @Autowired
-    DatabaseConfig databaseConfig;
+	@Autowired
+	DatabaseConfig databaseConfig;
 
-    @Autowired
-    UserRepository userRepository;
+	@Autowired
+	UserRepository userRepository;
 
-    public ResponseEntity<?> getUserById(String userId) {
-        System.out.println("   [LOG] getUserById  ->  userId: " + userId);
+	public ResponseEntity<?> getUserById(String userId) {
+		System.out.println("   [LOG] getUserById  ->  userId: " + userId);
 
-        ResponseModel response = new ResponseModel();
-        Connection conn = null;
+		ResponseModel response = new ResponseModel();
+		Connection conn = null;
 
-        try {
-            conn = databaseConfig.getConnection();
-            UserDto userDto = userRepository.getUserById(conn, userId);
+		try {
+			conn = databaseConfig.getConnection();
+			UserDto userDto = userRepository.getUserById(conn, userId);
 
-            if (userDto.getUsername() == null) {
-                response.setStatus("404");
-                response.setSuccess(false);
-                response.setMessage("Usuário não encontrado");
+			if (ValidationUtils.isEmpty(userDto) || ValidationUtils.isEmpty(userDto.getEmail())) {
+				response.setStatus("404");
+				response.setSuccess(false);
+				response.setMessage("Usuário não encontrado");
 
-                return ResponseEntity.status(404).body(response);
-            }
+				return ResponseEntity.status(404).body(response);
+			}
 
-            response.setStatus("200");
-            response.setSuccess(true);
-            response.setMessage("Usuário encontrado com sucesso");
-            response.setData(userDto);
+			response.setStatus("200");
+			response.setSuccess(true);
+			response.setMessage("Usuário encontrado com sucesso");
+			response.setData(userDto);
 
-            return ResponseEntity.ok(response);
+			return ResponseEntity.ok(response);
 
-        } catch (SQLException e) {
-            e.printStackTrace();
-            response.setStatus("500");
-            response.setSuccess(false);
-            response.setMessage("Erro: " + e.getMessage());
+		} catch (SQLException e) {
+			e.printStackTrace();
+			response.setStatus("500");
+			response.setSuccess(false);
+			response.setMessage("Erro: " + e.getMessage());
 
-            return ResponseEntity.status(500).body(response);
-        } finally {
-            if (conn != null) databaseConfig.closeConnection(conn);
-        }
+			return ResponseEntity.status(500).body(response);
+		} finally {
+			if (conn != null)
+				databaseConfig.closeConnection(conn);
+		}
 
-    }
+	}
 
-    public ResponseEntity<?> registerUser(UserModel userModel) {
-        System.out.println("   [LOG] getUserById  ->  email: " + userModel.getEmail());
+	public ResponseEntity<?> registerUser(UserModel userModel) {
+		System.out.println("   [LOG] getUserById  ->  email: " + userModel.getEmail());
 
-        ResponseModel response = new ResponseModel();
-        String userId = UUID.randomUUID().toString();
-        Connection conn = null;
+		ResponseModel response = new ResponseModel();
+		String userId = UUID.randomUUID().toString();
+		Connection conn = null;
 
-        try {
-            conn = databaseConfig.getConnection();
+		try {
+			conn = databaseConfig.getConnection();
 
-            UserModel userExists = userRepository.getUserByEmailOrUsername(conn, userModel.getEmail(), userModel.getUsername());
+			UserModel userExists = userRepository.getUserByEmailOrUsername(conn, userModel.getEmail(),
+					userModel.getUsername());
 
-            if (userExists.getUsername() != null || userExists.getEmail() != null) {
+			if (ValidationUtils.notEmpty(userExists.getUsername()) || ValidationUtils.notEmpty(userExists.getEmail())) {
+				String email = userExists.getEmail();
+				String username = userExists.getUsername();
+				String message = "";
 
-                if (Objects.equals(userExists.getEmail(), userModel.getEmail()) && Objects.equals(userExists.getUsername(), userModel.getUsername()))
-                    response.setMessage("Email e Nome de Usuário já cadastrados!");
-                else if (Objects.equals(userExists.getEmail(), userModel.getEmail()))
-                    response.setMessage("Email já cadastrado!");
-                else if (Objects.equals(userExists.getUsername(), userModel.getUsername()))
-                    response.setMessage("Nome de Usuário já cadastrado!");
+				if (userModel.getEmail().equals(email) && userModel.getUsername().equals(username))
+					message = "Email e Nome de Usuário já cadastrados!";
+				else if (userModel.getEmail().equals(email))
+					message = "Email já cadastrado!";
+				else if (userModel.getUsername().equals(username))
+					message = "Nome de Usuário já cadastrado!";
 
-                response.setStatus("400");
-                response.setSuccess(false);
+				response.setMessage(message);
+				response.setStatus("409");
+				response.setSuccess(false);
 
-                return ResponseEntity.status(400).body(response);
-            }
+				return ResponseEntity.status(409).body(response);
+			}
 
-            userModel.setId(userId);
-            userModel.setPassword(CryptoUtil.hashPassword(userModel.getPassword()));
-            userModel.setToken(JwtUtils.generateToken(userId, userModel.getUsername(), userModel.getEmail(), userModel.getName()));
+			String userJwtToken = JwtUtils.generateToken(userId, userModel.getUsername(), userModel.getEmail(),
+					userModel.getName());
 
-            userRepository.registerUser(conn, userModel);
+			userModel.setId(userId);
+			userModel.setPassword(CryptoUtil.hashPassword(userModel.getPassword()));
+			userModel.setToken(userJwtToken);
 
-            response.setStatus("200");
-            response.setSuccess(true);
-            response.setMessage("Usuário cadastrado com sucesso!");
-            response.setData(userModel);
+			userRepository.registerUser(conn, userModel);
 
-            return ResponseEntity.ok(response);
+			response.setStatus("200");
+			response.setSuccess(true);
+			response.setMessage("Usuário cadastrado com sucesso!");
+			response.setData(userModel);
 
-        } catch (SQLException e) {
-            e.printStackTrace();
-            response.setStatus("500");
-            response.setSuccess(false);
-            response.setMessage("Erro: " + e.getMessage());
+			return ResponseEntity.ok(response);
 
-            return ResponseEntity.status(500).body(response);
-        } finally {
-            if (conn != null) databaseConfig.closeConnection(conn);
-        }
+		} catch (SQLException e) {
+			e.printStackTrace();
+			response.setStatus("500");
+			response.setSuccess(false);
+			response.setMessage("Erro: " + e.getMessage());
 
-    }
+			return ResponseEntity.status(500).body(response);
+		} finally {
+			if (conn != null)
+				databaseConfig.closeConnection(conn);
+		}
 
-    public ResponseEntity<?> loginUser(UserModel userModel) {
-        System.out.println("   [LOG] Login  ->  " + userModel.getIdentification());
+	}
 
-        Connection conn = null;
-        ResponseModel response = new ResponseModel();
+	public ResponseEntity<?> loginUser(UserModel userModel) {
+		System.out.println("   [LOG] Login  ->  " + userModel.getIdentification());
 
-        try {
-            conn = databaseConfig.getConnection();
+		Connection conn = null;
+		ResponseModel response = new ResponseModel();
 
-            UserModel userLogin = userRepository.loginUser(conn, userModel.getIdentification());
+		try {
+			conn = databaseConfig.getConnection();
 
-            if (userLogin.getUsername() == null || userLogin.getEmail() == null) {
-                response.setStatus("404");
-                response.setSuccess(false);
-                response.setMessage("Usuário não encontrado!");
+			UserModel userLogin = userRepository.loginUser(conn, userModel.getIdentification());
 
-                return ResponseEntity.status(404).body(response);
-            }
+			if (ValidationUtils.isEmpty(userLogin.getUsername()) || ValidationUtils.isEmpty(userLogin.getEmail())) {
+				response.setStatus("404");
+				response.setSuccess(false);
+				response.setMessage("Usuário não encontrado!");
 
-            if (! CryptoUtil.checkPassword(userModel.getPassword(), userLogin.getPassword())) {
-                response.setStatus("401");
-                response.setSuccess(false);
-                response.setMessage("A senha está incorreta!");
+				return ResponseEntity.status(404).body(response);
+			}
 
-                return ResponseEntity.status(401).body(response);
-            }
+			if (!CryptoUtil.checkPassword(userModel.getPassword(), userLogin.getPassword())) {
+				response.setStatus("401");
+				response.setSuccess(false);
+				response.setMessage("A senha está incorreta!");
 
-            userLogin.setToken(JwtUtils.generateToken(userLogin.getId(), userLogin.getUsername(), userLogin.getEmail(), userLogin.getName()));
+				return ResponseEntity.status(401).body(response);
+			}
 
-            response.setStatus("200");
-            response.setSuccess(true);
-            response.setMessage("Usuário logado com sucesso!");
-            response.setData(userLogin);
+			userLogin.setToken(JwtUtils.generateToken(userLogin.getId(), userLogin.getUsername(), userLogin.getEmail(),
+					userLogin.getName()));
 
-            return ResponseEntity.ok(response);
+			response.setStatus("200");
+			response.setSuccess(true);
+			response.setMessage("Usuário logado com sucesso!");
+			response.setData(userLogin);
 
-        } catch (SQLException e) {
-            e.printStackTrace();
-            response.setStatus("500");
-            response.setSuccess(false);
-            response.setMessage("Erro: " + e.getMessage());
+			return ResponseEntity.ok(response);
 
-            return ResponseEntity.status(500).body(response);
-        } finally {
-            if (conn != null) databaseConfig.closeConnection(conn);
-        }
-    }
+		} catch (SQLException e) {
+			e.printStackTrace();
+			response.setStatus("500");
+			response.setSuccess(false);
+			response.setMessage("Erro: " + e.getMessage());
 
-    public ResponseEntity<?> insertUserMetadata(String userId, UserMetadataDto userMetadataDto) {
-        System.out.println("   [LOG] insertUserMetadata  ->  userId: " + userId);
+			return ResponseEntity.status(500).body(response);
+		} finally {
+			if (conn != null)
+				databaseConfig.closeConnection(conn);
+		}
+	}
 
-        userMetadataDto.setInsertedAt(DateUtils.getCurrentTimestamp());
-        userMetadataDto.setId(UUID.randomUUID().toString());
+	public ResponseEntity<?> insertUserMetadata(String userId, UserMetadataDto userMetadataDto) {
+		System.out.println("   [LOG] insertUserMetadata  ->  userId: " + userId);
 
-        Connection conn = null;
-        ResponseModel response = new ResponseModel();
+		userMetadataDto.setInsertedAt(DateUtils.getCurrentTimestamp());
+		userMetadataDto.setId(UUID.randomUUID().toString());
 
-        try {
-            conn = databaseConfig.getConnection();
-            userRepository.insertUserMetadata(conn, userId, userMetadataDto);
+		Connection conn = null;
+		ResponseModel response = new ResponseModel();
 
-            response.setStatus("200");
-            response.setSuccess(true);
-            response.setMessage("Dados do usuário inseridos com sucesso!");
-            response.setData(userMetadataDto);
+		try {
+			conn = databaseConfig.getConnection();
+			userRepository.insertUserMetadata(conn, userId, userMetadataDto);
 
-            return ResponseEntity.ok(response);
-        } catch (SQLException e) {
-            e.printStackTrace();
-            response.setStatus("500");
-            response.setSuccess(false);
-            response.setMessage("Erro: " + e.getMessage());
+			response.setStatus("200");
+			response.setSuccess(true);
+			response.setMessage("Dados do usuário inseridos com sucesso!");
+			response.setData(userMetadataDto);
 
-            return ResponseEntity.status(500).body(response);
-        } finally {
-            if (conn != null) databaseConfig.closeConnection(conn);
-        }
-    }
+			return ResponseEntity.ok(response);
+		} catch (SQLException e) {
+			e.printStackTrace();
+			response.setStatus("500");
+			response.setSuccess(false);
+			response.setMessage("Erro: " + e.getMessage());
+
+			return ResponseEntity.status(500).body(response);
+		} finally {
+			if (conn != null)
+				databaseConfig.closeConnection(conn);
+		}
+	}
 
 }

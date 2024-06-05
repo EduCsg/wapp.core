@@ -1,9 +1,5 @@
 package com.wapp.core.repositories;
 
-import com.wapp.core.dto.RoutineDto;
-import com.wapp.core.models.ExerciseModel;
-import org.springframework.stereotype.Repository;
-
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -12,215 +8,224 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import org.springframework.stereotype.Repository;
+
+import com.wapp.core.dto.RoutineDto;
+import com.wapp.core.models.ExerciseModel;
+import com.wapp.core.utils.ValidationUtils;
+
 @Repository
 public class RoutinesRepository {
 
-    public List<RoutineDto> getRoutineListByUserId(Connection conn, String userId) throws SQLException {
+	public List<RoutineDto> getRoutineListByUserId(Connection conn, String userId) throws SQLException {
 
-        String query = "SELECT r.id, r.name, re.exercise_order, re.series, e.id, e.name, e.muscle_group " +
-                               " FROM ROUTINES r " +
-                               " LEFT JOIN ROUTINES_EXERCISES re on r.id = re.routine_id " +
-                               " LEFT JOIN wapp_db.EXERCISES e on re.exercise_id = e.id " +
-                               " where r.user_id = ? " +
-                               " ORDER BY re.exercise_order;";
+		String query = " SELECT r.id, r.name, re.exercise_order, re.series, e.id, e.name, e.muscle_group "
+				+ " FROM ROUTINES r " //
+				+ " LEFT JOIN ROUTINES_EXERCISES re on r.id = re.routine_id "
+				+ " LEFT JOIN wapp_db.EXERCISES e on re.exercise_id = e.id "
+				+ " WHERE r.user_id = ? ORDER BY re.exercise_order; ";
 
-        PreparedStatement stm = conn.prepareStatement(query);
-        stm.setString(1, userId);
+		PreparedStatement stm = conn.prepareStatement(query);
+		stm.setString(1, userId);
 
-        ResultSet res = stm.executeQuery();
-        List<RoutineDto> routinesList = new ArrayList<>();
+		ResultSet res = stm.executeQuery();
+		List<RoutineDto> routinesList = new ArrayList<>();
 
+		while (res.next()) {
+			String routineId = res.getString("r.id");
+			RoutineDto routineDto = null;
 
-        while (res.next()) {
-            String routineId = res.getString("r.id");
-            RoutineDto routineDto = null;
+			// Procura a rotina na lista de rotinas do routinesList
+			for (RoutineDto r : routinesList) {
+				if (r.getId().equals(routineId)) {
+					routineDto = r;
+					break;
+				}
+			}
 
-            // Procura a rotina na lista de rotinas do routinesList
-            for (RoutineDto r : routinesList) {
-                if (r.getId().equals(routineId)) {
-                    routineDto = r;
-                    break;
-                }
-            }
+			// se for uma rotina nova
+			if (ValidationUtils.isEmpty(routineDto)) {
+				routineDto = new RoutineDto();
+				routineDto.setId(routineId);
+				routineDto.setName(res.getString("r.name"));
 
-            // se for uma rotina nova
-            if (routineDto == null) {
-                routineDto = new RoutineDto();
-                routineDto.setId(routineId);
-                routineDto.setName(res.getString("r.name"));
+				// Adiciona a rotina na lista de rotinas
+				routinesList.add(routineDto);
+			}
 
-                // Adiciona a rotina na lista de rotinas
-                routinesList.add(routineDto);
-            }
+			String exerciseId = res.getString("e.id");
+			if (ValidationUtils.isEmpty(exerciseId))
+				continue;
 
-            String exerciseId = res.getString("e.id");
-            if (exerciseId == null) continue;
+			// Cria um novo exercício
+			ExerciseModel exerciseModel = new ExerciseModel();
+			exerciseModel.setId(res.getString("e.id"));
+			exerciseModel.setName(res.getString("e.name"));
+			exerciseModel.setMuscleGroup(res.getString("e.muscle_group"));
+			exerciseModel.setExerciseOrder(res.getInt("re.exercise_order"));
+			exerciseModel.setSeries(res.getInt("re.series"));
 
-            // Cria um novo exercício
-            ExerciseModel exerciseModel = new ExerciseModel();
-            exerciseModel.setId(res.getString("e.id"));
-            exerciseModel.setName(res.getString("e.name"));
-            exerciseModel.setMuscleGroup(res.getString("e.muscle_group"));
-            exerciseModel.setExerciseOrder(res.getInt("re.exercise_order"));
-            exerciseModel.setSeries(res.getInt("re.series"));
+			// Adiciona o exercício na rotina
+			routineDto.getExercises().add(exerciseModel);
+		}
 
-            // Adiciona o exercício na rotina
-            routineDto.getExercises().add(exerciseModel);
-        }
+		res.close();
+		stm.close();
+		return routinesList;
+	}
 
-        return routinesList;
-    }
+	public RoutineDto getRoutineById(Connection conn, String routineId) throws SQLException {
 
-    public RoutineDto getRoutineById(Connection conn, String routineId) throws SQLException {
+		String query = " SELECT r.id, r.name, re.exercise_order, re.series, e.id, e.name, e.muscle_group "
+				+ " FROM ROUTINES r " //
+				+ " LEFT JOIN ROUTINES_EXERCISES re on r.id = re.routine_id "
+				+ " LEFT JOIN wapp_db.EXERCISES e on re.exercise_id = e.id "
+				+ " WHERE r.id = ? ORDER BY re.exercise_order; ";
 
-        String query = "SELECT r.id, r.name, re.exercise_order, re.series, e.id, e.name, e.muscle_group " +
-                               " FROM ROUTINES r " +
-                               " LEFT JOIN ROUTINES_EXERCISES re on r.id = re.routine_id " +
-                               " LEFT JOIN wapp_db.EXERCISES e on re.exercise_id = e.id " +
-                               " WHERE r.id = ? " +
-                               " ORDER BY re.exercise_order;";
+		PreparedStatement stm = conn.prepareStatement(query);
+		stm.setString(1, routineId);
 
-        PreparedStatement stm = conn.prepareStatement(query);
-        stm.setString(1, routineId);
+		ResultSet res = stm.executeQuery();
+		RoutineDto routineDto = null;
 
-        ResultSet res = stm.executeQuery();
-        RoutineDto routineDto = null;
+		while (res.next()) {
+			if (ValidationUtils.isEmpty(routineDto)) {
+				routineDto = new RoutineDto();
+				routineDto.setId(res.getString("r.id"));
+				routineDto.setName(res.getString("r.name"));
+			}
 
-        while (res.next()) {
-            if (routineDto == null) {
-                routineDto = new RoutineDto();
-                routineDto.setId(res.getString("r.id"));
-                routineDto.setName(res.getString("r.name"));
-            }
+			String exerciseId = res.getString("e.id");
+			if (ValidationUtils.isEmpty(exerciseId))
+				continue;
 
-            String exerciseId = res.getString("e.id");
-            if (exerciseId == null) continue;
+			// Cria um novo exercício
+			ExerciseModel exerciseModel = new ExerciseModel();
+			exerciseModel.setId(res.getString("e.id"));
+			exerciseModel.setName(res.getString("e.name"));
+			exerciseModel.setMuscleGroup(res.getString("e.muscle_group"));
+			exerciseModel.setExerciseOrder(res.getInt("re.exercise_order"));
+			exerciseModel.setSeries(res.getInt("re.series"));
 
-            // Cria um novo exercício
-            ExerciseModel exerciseModel = new ExerciseModel();
-            exerciseModel.setId(res.getString("e.id"));
-            exerciseModel.setName(res.getString("e.name"));
-            exerciseModel.setMuscleGroup(res.getString("e.muscle_group"));
-            exerciseModel.setExerciseOrder(res.getInt("re.exercise_order"));
-            exerciseModel.setSeries(res.getInt("re.series"));
+			// Adiciona o exercício na rotina
+			routineDto.getExercises().add(exerciseModel);
+		}
 
-            // Adiciona o exercício na rotina
-            routineDto.getExercises().add(exerciseModel);
-        }
+		res.close();
+		stm.close();
+		return routineDto;
+	}
 
-        return routineDto;
-    }
+	public void postRoutine(Connection conn, String userId, RoutineDto routineDto) throws SQLException {
 
-    public void postRoutine(Connection conn, String userId, RoutineDto routineDto) throws SQLException {
+		String query = " INSERT INTO ROUTINES (id, user_id, name) VALUES (?, ?, ?); ";
 
-        String query = " INSERT INTO ROUTINES (id, user_id, name) VALUES (?, ?, ?); ";
+		PreparedStatement stm = conn.prepareStatement(query);
+		stm.setString(1, routineDto.getId());
+		stm.setString(2, userId);
+		stm.setString(3, routineDto.getName());
 
-        PreparedStatement stm = conn.prepareStatement(query);
-        stm.setString(1, routineDto.getId());
-        stm.setString(2, userId);
-        stm.setString(3, routineDto.getName());
+		int affectedRows = stm.executeUpdate();
+		stm.close();
 
-        int affectedRows = stm.executeUpdate();
+		if (affectedRows == 0)
+			throw new SQLException("Erro ao criar rotina!");
+	}
 
-        if (affectedRows == 0) {
-            throw new SQLException("Erro ao criar rotina!");
-        }
+	public void linkRoutineToExercise(Connection conn, String routineId, ExerciseModel exercise) throws SQLException {
 
-    }
+		String query = " INSERT INTO ROUTINES_EXERCISES (id, routine_id, exercise_id, exercise_order, series) "
+				+ " VALUES (?, ?, ?, ?, ?); ";
 
-    public void linkRoutineToExercise(Connection conn, String routineId, ExerciseModel exercise) throws SQLException {
+		PreparedStatement stm = conn.prepareStatement(query);
 
-        String query = " INSERT INTO ROUTINES_EXERCISES (id, routine_id, exercise_id, exercise_order, series) " +
-                               " VALUES (?, ?, ?, ?, ?); ";
+		stm.setString(1, UUID.randomUUID().toString());
+		stm.setString(2, routineId);
+		stm.setString(3, exercise.getId());
+		stm.setInt(4, exercise.getExerciseOrder());
+		stm.setInt(5, exercise.getSeries());
 
-        PreparedStatement stm = conn.prepareStatement(query);
+		int affectedRows = stm.executeUpdate();
+		stm.close();
 
-        stm.setString(1, UUID.randomUUID().toString());
-        stm.setString(2, routineId);
-        stm.setString(3, exercise.getId());
-        stm.setInt(4, exercise.getExerciseOrder());
-        stm.setInt(5, exercise.getSeries());
+		if (affectedRows == 0)
+			throw new SQLException("Erro ao vincular exercício!");
+	}
 
-        int affectedRows = stm.executeUpdate();
+	public int deleteRoutineExercises(Connection conn, String routineId, List<String> exercisesList)
+			throws SQLException {
 
-        if (affectedRows == 0) {
-            throw new SQLException("Erro ao vincular exercício!");
-        }
+		StringBuilder query = new StringBuilder(" DELETE FROM ROUTINES_EXERCISES WHERE routine_id = ? ");
 
-    }
+		if (ValidationUtils.isEmpty(exercisesList)) {
+			PreparedStatement stm = conn.prepareStatement(query.toString());
+			stm.setString(1, routineId);
 
-    public int deleteRoutineExercises(Connection conn, String routineId, String[] exercisesList) throws SQLException {
+			int res = stm.executeUpdate();
+			stm.close();
+			return res;
+		}
 
-        String query = " DELETE FROM ROUTINES_EXERCISES WHERE routine_id = ? ";
+		query.append(" AND exercise_id NOT IN (");
 
-        if (exercisesList == null || exercisesList.length == 0) {
-            PreparedStatement stm = conn.prepareStatement(query);
-            stm.setString(1, routineId);
+		// trecho 2
+		for (int i = 0; i < exercisesList.size(); i++) {
+			query.append("?");
+			if (i < exercisesList.size() - 1)
+				query.append(", ");
+		}
+		query.append(");");
 
-            return stm.executeUpdate();
-        }
+		PreparedStatement stm = conn.prepareStatement(query.toString());
+		stm.setString(1, routineId);
 
-        query += " AND exercise_id NOT IN (";
-        StringBuilder placeholders = new StringBuilder();
-        for (int i = 0; i < exercisesList.length; i++) {
-            query += "?";
-            placeholders.append("?, ");
-            if (i < exercisesList.length - 1) {
-                query += ", ";
-            }
-        }
-        query += ");";
+		int parameterIndex = 2;
+		for (String exerciseId : exercisesList) {
+			stm.setString(parameterIndex++, exerciseId);
+		}
 
-        if (placeholders.length() > 0) {
-            placeholders.setLength(placeholders.length() - 2);
-        }
+		int result = stm.executeUpdate();
+		stm.close();
 
-        PreparedStatement stm = conn.prepareStatement(query);
-        stm.setString(1, routineId);
+		if (result == 0)
+			throw new SQLException("Erro ao deletar exercícios da rotina!");
 
-        int parameterIndex = 2;
-        for (String exerciseId : exercisesList) {
-            stm.setString(parameterIndex++, exerciseId);
-        }
+		return result;
+	}
 
-        return stm.executeUpdate();
+	public void insertOrUpdateRoutine(Connection conn, String routineId, RoutineDto routineDto) throws SQLException {
 
-    }
+		String query = " INSERT INTO ROUTINES_EXERCISES (id, routine_id, exercise_id, exercise_order, series) "
+				+ " VALUES (?, ?, ?, ?, ?) " //
+				+ " ON DUPLICATE KEY UPDATE exercise_order = VALUES(exercise_order), series = VALUES(series); ";
 
-    public void insertOrUpdateRoutine(Connection conn, String routineId, RoutineDto routineDto, String[] exercisesList) throws SQLException {
+		PreparedStatement stm = conn.prepareStatement(query);
 
-        String query = " INSERT INTO ROUTINES_EXERCISES (id, routine_id, exercise_id, exercise_order, series) " +
-                               " VALUES (?, ?, ?, ?, ?) " +
-                               " ON DUPLICATE KEY UPDATE " +
-                               " exercise_order = VALUES(exercise_order), " +
-                               " series = VALUES(series); ";
+		for (ExerciseModel exercise : routineDto.getExercises()) {
+			stm.setString(1, UUID.randomUUID().toString());
+			stm.setString(2, routineId);
+			stm.setString(3, exercise.getId());
+			stm.setInt(4, exercise.getExerciseOrder());
+			stm.setInt(5, exercise.getSeries());
 
-        PreparedStatement stm = conn.prepareStatement(query);
+			stm.addBatch();
+		}
 
-        for (ExerciseModel exercise : routineDto.getExercises()) {
-            stm.setString(1, UUID.randomUUID().toString());
-            stm.setString(2, routineId);
-            stm.setString(3, exercise.getId());
-            stm.setInt(4, exercise.getExerciseOrder());
-            stm.setInt(5, exercise.getSeries());
+		stm.executeBatch();
+		stm.close();
+	}
 
-            stm.addBatch();
-        }
+	public int deleteRoutineById(Connection conn, String routineId) throws SQLException {
 
-        stm.executeBatch();
+		String query = " DELETE FROM ROUTINES WHERE id = ?; ";
 
-    }
+		PreparedStatement stm = conn.prepareStatement(query);
+		stm.setString(1, routineId);
 
+		int result = stm.executeUpdate();
+		stm.close();
 
-    public int deleteRoutineById(Connection conn, String routineId) throws SQLException {
-
-        String query = " DELETE FROM ROUTINES WHERE id = ?; ";
-
-        PreparedStatement stm = conn.prepareStatement(query);
-        stm.setString(1, routineId);
-
-        return stm.executeUpdate();
-
-    }
+		return result;
+	}
 
 }
