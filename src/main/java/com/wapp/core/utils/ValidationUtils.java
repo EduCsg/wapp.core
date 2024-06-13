@@ -1,5 +1,6 @@
 package com.wapp.core.utils;
 
+import java.lang.reflect.Field;
 import java.util.List;
 
 public class ValidationUtils {
@@ -13,7 +14,11 @@ public class ValidationUtils {
 	}
 
 	public static boolean isEmpty(Object obj) {
-		return obj == null || obj.toString().isEmpty();
+		try {
+			return obj == null || obj.toString().isEmpty() || areAllFieldsNull(obj);
+		} catch (IllegalAccessException e) {
+			return true;
+		}
 	}
 
 	public static boolean notEmpty(String value) {
@@ -22,6 +27,16 @@ public class ValidationUtils {
 
 	public static boolean notEmpty(List<?> list) {
 		return list != null && !list.isEmpty() && list.get(0) != null;
+	}
+
+	private static boolean areAllFieldsNull(Object obj) throws IllegalAccessException {
+		for (Field field : obj.getClass().getDeclaredFields()) {
+			field.setAccessible(true); // You might want to set modifier to public first.
+			if (field.get(obj) != null) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 }
