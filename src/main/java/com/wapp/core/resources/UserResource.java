@@ -4,8 +4,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import com.wapp.core.dto.UserDto;
 import com.wapp.core.dto.UserMetadataDto;
-import com.wapp.core.models.UserModel;
 import com.wapp.core.services.UserService;
 
 import jakarta.validation.Valid;
@@ -23,13 +23,13 @@ public class UserResource {
 	}
 
 	@PostMapping("/register")
-	public ResponseEntity<?> registerUser(@Valid @RequestBody UserModel userModel) {
-		return userService.registerUser(userModel);
+	public ResponseEntity<?> registerUser(@Valid @RequestBody UserDto userDto) {
+		return userService.registerUser(userDto);
 	}
 
 	@PostMapping("/login")
-	public ResponseEntity<?> loginUser(@RequestBody UserModel userModel) {
-		return userService.loginUser(userModel);
+	public ResponseEntity<?> loginUser(@RequestBody UserDto userDto) {
+		return userService.loginUser(userDto);
 	}
 
 	@PostMapping("/metadata/{userId}")

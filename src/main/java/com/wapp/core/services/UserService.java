@@ -32,7 +32,7 @@ public class UserService {
 
 		try {
 			conn = databaseConfig.getConnection();
-			UserDto userDto = userRepository.getUserById(conn, userId);
+			UserModel userDto = userRepository.getUserById(conn, userId);
 
 			if (ValidationUtils.isEmpty(userDto) || ValidationUtils.isEmpty(userDto.getEmail())) {
 				response.setStatus("404");
@@ -63,8 +63,8 @@ public class UserService {
 
 	}
 
-	public ResponseEntity<?> registerUser(UserModel userModel) {
-		System.out.println("   [LOG] getUserById  ->  email: " + userModel.getEmail());
+	public ResponseEntity<?> registerUser(UserDto userDto) {
+		System.out.println("   [LOG] RegisterUser  ->  email: " + userDto.getEmail());
 
 		ResponseModel response = new ResponseModel();
 		String userId = UUID.randomUUID().toString();
@@ -73,19 +73,19 @@ public class UserService {
 		try {
 			conn = databaseConfig.getConnection();
 
-			UserModel userExists = userRepository.getUserByEmailOrUsername(conn, userModel.getEmail(),
-					userModel.getUsername());
+			UserDto userExists = userRepository.getUserByEmailOrUsername(conn, userDto.getEmail(),
+					userDto.getUsername());
 
 			if (ValidationUtils.notEmpty(userExists.getUsername()) || ValidationUtils.notEmpty(userExists.getEmail())) {
 				String email = userExists.getEmail();
 				String username = userExists.getUsername();
 				String message = "";
 
-				if (userModel.getEmail().equals(email) && userModel.getUsername().equals(username))
+				if (userDto.getEmail().equals(email) && userDto.getUsername().equals(username))
 					message = "Email e Nome de Usuário já cadastrados!";
-				else if (userModel.getEmail().equals(email))
+				else if (userDto.getEmail().equals(email))
 					message = "Email já cadastrado!";
-				else if (userModel.getUsername().equals(username))
+				else if (userDto.getUsername().equals(username))
 					message = "Nome de Usuário já cadastrado!";
 
 				response.setMessage(message);
@@ -95,19 +95,19 @@ public class UserService {
 				return ResponseEntity.status(409).body(response);
 			}
 
-			String userJwtToken = JwtUtils.generateToken(userId, userModel.getUsername(), userModel.getEmail(),
-					userModel.getName());
+			String userJwtToken = JwtUtils.generateToken(userId, userDto.getUsername(), userDto.getEmail(),
+					userDto.getName());
 
-			userModel.setId(userId);
-			userModel.setPassword(CryptoUtil.hashPassword(userModel.getPassword()));
-			userModel.setToken(userJwtToken);
+			userDto.setId(userId);
+			userDto.setPassword(CryptoUtil.hashPassword(userDto.getPassword()));
+			userDto.setToken(userJwtToken);
 
-			userRepository.registerUser(conn, userModel);
+			userRepository.registerUser(conn, userDto);
 
 			response.setStatus("200");
 			response.setSuccess(true);
 			response.setMessage("Usuário cadastrado com sucesso!");
-			response.setData(userModel);
+			response.setData(userDto);
 
 			return ResponseEntity.ok(response);
 
@@ -125,8 +125,8 @@ public class UserService {
 
 	}
 
-	public ResponseEntity<?> loginUser(UserModel userModel) {
-		System.out.println("   [LOG] Login  ->  " + userModel.getIdentification());
+	public ResponseEntity<?> loginUser(UserDto userDto) {
+		System.out.println("   [LOG] Login  ->  " + userDto.getIdentification());
 
 		Connection conn = null;
 		ResponseModel response = new ResponseModel();
@@ -134,7 +134,7 @@ public class UserService {
 		try {
 			conn = databaseConfig.getConnection();
 
-			UserModel userLogin = userRepository.loginUser(conn, userModel.getIdentification());
+			UserDto userLogin = userRepository.loginUser(conn, userDto.getIdentification());
 
 			if (ValidationUtils.isEmpty(userLogin.getUsername()) || ValidationUtils.isEmpty(userLogin.getEmail())) {
 				response.setStatus("404");
@@ -144,7 +144,7 @@ public class UserService {
 				return ResponseEntity.status(404).body(response);
 			}
 
-			if (!CryptoUtil.checkPassword(userModel.getPassword(), userLogin.getPassword())) {
+			if (!CryptoUtil.checkPassword(userDto.getPassword(), userLogin.getPassword())) {
 				response.setStatus("401");
 				response.setSuccess(false);
 				response.setMessage("A senha está incorreta!");

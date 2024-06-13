@@ -14,7 +14,7 @@ import com.wapp.core.models.UserModel;
 @Repository
 public class UserRepository {
 
-	public UserDto getUserById(Connection conn, String userId) throws SQLException {
+	public UserModel getUserById(Connection conn, String userId) throws SQLException {
 
 		String query = " SELECT u.username, u.email, u.name, "
 				+ " um.age, um.body_fat, um.gender, um.height, um.inserted_at, um.weight " //
@@ -25,7 +25,7 @@ public class UserRepository {
 		PreparedStatement stm = conn.prepareStatement(query);
 		stm.setString(1, userId);
 
-		UserDto userDto = new UserDto();
+		UserModel userDto = new UserModel();
 		ResultSet res = stm.executeQuery();
 
 		if (!res.next())
@@ -47,7 +47,7 @@ public class UserRepository {
 		return userDto;
 	}
 
-	public UserModel getUserByEmailOrUsername(Connection conn, String email, String username) throws SQLException {
+	public UserDto getUserByEmailOrUsername(Connection conn, String email, String username) throws SQLException {
 
 		String query = " SELECT u.username, u.email FROM USERS u WHERE email = ? OR username = ?; ";
 
@@ -55,7 +55,7 @@ public class UserRepository {
 		stm.setString(1, email);
 		stm.setString(2, username);
 
-		UserModel userModel = new UserModel();
+		UserDto userModel = new UserDto();
 		ResultSet res = stm.executeQuery();
 
 		if (!res.next())
@@ -70,22 +70,22 @@ public class UserRepository {
 		return userModel;
 	}
 
-	public void registerUser(Connection conn, UserModel userModel) throws SQLException {
+	public void registerUser(Connection conn, UserDto userDto) throws SQLException {
 
 		String query = " INSERT INTO USERS (id, username, email, name, password) VALUES (?, ?, ?, ?, ?); ";
 
 		PreparedStatement stm = conn.prepareStatement(query);
-		stm.setString(1, userModel.getId());
-		stm.setString(2, userModel.getUsername());
-		stm.setString(3, userModel.getEmail());
-		stm.setString(4, userModel.getName());
-		stm.setString(5, userModel.getPassword());
+		stm.setString(1, userDto.getId());
+		stm.setString(2, userDto.getUsername());
+		stm.setString(3, userDto.getEmail());
+		stm.setString(4, userDto.getName());
+		stm.setString(5, userDto.getPassword());
 
 		stm.executeUpdate();
 		stm.close();
 	}
 
-	public UserModel loginUser(Connection conn, String identification) throws SQLException {
+	public UserDto loginUser(Connection conn, String identification) throws SQLException {
 
 		String query = " SELECT u.id, u.username, u.email, u.name, u.password FROM USERS u WHERE email = ? OR username = ?; ";
 
@@ -95,7 +95,7 @@ public class UserRepository {
 
 		ResultSet res = stm.executeQuery();
 
-		UserModel userModel = new UserModel();
+		UserDto userModel = new UserDto();
 		if (!res.next())
 			return userModel;
 
